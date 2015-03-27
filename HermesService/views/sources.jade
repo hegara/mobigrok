@@ -1,0 +1,13 @@
+extends layout
+
+block content
+    h1 Sources
+
+    if sources.length
+        p Here are the current sources:
+        ul.sources
+            for user in sources
+                li.user
+                    a(href='/sources/#{user.id}') #{user.name}
+    else
+        p There are no sources currently.
