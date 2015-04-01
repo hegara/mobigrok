@@ -6,8 +6,18 @@ block content
     if sources.length
         p Here are the current sources:
         ul.sources
-            for user in sources
-                li.user
-                    a(href='/sources/#{user.id}') #{user.name}
+            for source in sources
+                li.source
+                    a(href='/sources/#{source.id}') #{source.name}
     else
         p There are no sources currently.
+
+    form(action='', method='POST')
+        p Create a new source:
+        input(type='text', name='name', placeholder='Name', required)
+        input(type='url', name='url', placeholder='Url', required)
+        select(name='type')
+            option Git
+            option Mercurial
+            option SVN
+        input(type='submit', value='Create')

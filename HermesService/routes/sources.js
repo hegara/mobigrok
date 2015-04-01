@@ -7,7 +7,7 @@ var Source = require('../models/source');
  * GET /sources
  */
 exports.list = function (req, res, next) {
-    User.getAll(function (err, sources) {
+    Source.getAll(function (err, sources) {
         if (err) return next(err);
         res.render('sources', {
             sources: sources
@@ -19,13 +19,13 @@ exports.list = function (req, res, next) {
  * POST /sources
  */
 exports.create = function (req, res, next) {
-    User.create({
-        name: req.body['name']，
-        type: req.body['type']，
+    Source.create({
+        name: req.body['name'],
+        type: req.body['type'],
         url: req.body['url']
-    }, function (err, user) {
+    }, function (err, source) {
         if (err) return next(err);
-        res.redirect('/sources/' + user.id);
+        res.redirect('/sources/' + source.id);
     });
 };
 
@@ -33,16 +33,45 @@ exports.create = function (req, res, next) {
  * GET /sources/:id
  */
 exports.show = function (req, res, next) {
-    User.get(req.params.id, function (err, source) {
+    Source.get(req.params.id, function (err, source) {
         if (err) return next(err);
         // TODO also fetch and show followers? (not just follow*ing*)
-        source.getFollowingAndOthers(function (err, following, others) {
+        source.getFollowingAndOthers(function (err, enlistedby, others) {
             if (err) return next(err);
             res.render('source', {
                 source: source,
-                following: following,
+                enlistedby: enlistedby,
                 others: others
             });
+        });
+    });
+};
+
+/**
+ * POST /sources/:id
+ */
+exports.edit = function (req, res, next) {
+    Source.get(req.params.id, function (err, source) {
+        if (err) return next(err);
+        source.name = req.body['name'];
+        source.type = req.body['type'];
+        source.url = req.body['url'];
+        source.save(function (err) {
+            if (err) return next(err);
+            res.redirect('/sources/' + source.id);
+        });
+    });
+};
+
+/**
+ * DELETE /sources/:id
+ */
+exports.del = function (req, res, next) {
+    Source.get(req.params.id, function (err, source) {
+        if (err) return next(err);
+        source.del(function (err) {
+            if (err) return next(err);
+            res.redirect('/sources');
         });
     });
 };

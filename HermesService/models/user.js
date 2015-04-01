@@ -22,14 +22,19 @@ Object.defineProperty(User.prototype, 'id', {
     get: function () { return this._node.id; }
 });
 
-Object.defineProperty(User.prototype, 'name', {
-    get: function () {
-        return this._node.data['name'];
-    },
-    set: function (name) {
-        this._node.data['name'] = name;
-    }
-});
+User.defineProperty = function (prop) {
+    Object.defineProperty(User.prototype, prop, {
+        get: function () {
+            return this._node.data[prop] || 'none';
+        },
+        set: function (name) {
+            this._node.data[prop] = name;
+        }
+    });    
+}
+
+User.defineProperty('name');
+User.defineProperty('email');
 
 // public instance methods:
 

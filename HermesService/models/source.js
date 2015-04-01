@@ -22,33 +22,20 @@ Object.defineProperty(Source.prototype, 'id', {
     get: function () { return this._node.id; }
 });
 
-Object.defineProperty(Source.prototype, 'name', {
-    get: function () {
-        return this._node.data['name'];
-    },
-    set: function (name) {
-        this._node.data['name'] = name;
-    }
-});
+Source.defineProperty = function (prop) {
+    Object.defineProperty(Source.prototype, prop, {
+        get: function () {
+            return this._node.data[prop] || 'none';
+        },
+        set: function (name) {
+            this._node.data[prop] = name;
+        }
+    });    
+}
 
-Object.defineProperty(Source.prototype, 'type', {
-    get: function () {
-        return this._node.data['type'];
-    },
-    set: function (type) {
-        this._node.data['type'] = type;
-    }
-});
-
-Object.defineProperty(Source.prototype, 'url', {
-    get: function () {
-        return this._node.data['url'];
-    },
-    set: function (url) {
-        this._node.data['url'] = url;
-    }
-});
-
+Source.defineProperty('name');
+Source.defineProperty('type');
+Source.defineProperty('url');
 
 // public instance methods:
 
@@ -64,11 +51,11 @@ Source.prototype.del = function (callback) {
     // (note that this'll still fail if there are any relationships attached
     // of any other types, which is good because we don't expect any.)
     var query = [
-        'MATCH (Source:Source)',
-        'WHERE ID(Source) = {SourceId}',
-        'DELETE Source',
-        'WITH Source',
-        'MATCH (Source) -[rel:enlist]- (other)',
+        'MATCH (source:Source)',
+        'WHERE ID(source) = {SourceId}',
+        'DELETE source',
+        'WITH source',
+        'MATCH (source) -[rel:enlist]- (other)',
         'DELETE rel',
     ].join('\n')
 
@@ -117,7 +104,11 @@ Source.prototype.getEnlisters = function (callback) {
     });
 };
 
-Source.prototype.addEnlister = function(user)
+Source.prototype.addEnlister = function (user) {
+    user._node.createRelationshipTo(this._node, 'enlist', {}, function (err, rel) {
+        callback(err);
+    });
+}
 
 // static methods:
 
