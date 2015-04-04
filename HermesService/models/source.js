@@ -139,14 +139,14 @@ Source.create = function (data, callback) {
     // construct a new instance of our class with the data, so it can
     // validate and extend it, etc., if we choose to do that in the future:
     var node = db.createNode(data);
-    var Source = new Source(node);
+    var source = new Source(node);
 
     // but we do the actual persisting with a Cypher query, so we can also
     // apply a label at the same time. (the save() method doesn't support
     // that, since it uses Neo4j's REST API, which doesn't support that.)
     var query = [
-        'CREATE (Source:Source {data})',
-        'RETURN Source',
+        'CREATE (source:Source {data})',
+        'RETURN source',
     ].join('\n');
 
     var params = {
@@ -155,7 +155,7 @@ Source.create = function (data, callback) {
 
     db.query(query, params, function (err, results) {
         if (err) return callback(err);
-        var Source = new Source(results[0]['Source']);
-        callback(null, Source);
+        var source = new Source(results[0]['source']);
+        callback(null, source);
     });
 };
