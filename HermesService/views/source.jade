@@ -6,3 +6,20 @@ block content
 
     p
         a(href='/sources') Back to all sources
+
+    form(action='/sources/#{source.id}', method='POST')
+        p Edit this source:
+        input(type='text', name='name', placeholder='#{source.name}', required)
+        input(type='url', name='url', placeholder='#{source.url}', required)
+        select(name='type')
+            each repo_type in alltypes
+                if repo_type.toLowerCase() == source.type.toLowerCase()
+                    option(selected) #{repo_type}
+                else
+                    option #{repo_type}
+        input(type='submit', value='Update')
+
+    form(action='/sources/#{source.id}', method='POST', onsubmit='return confirm("Are you sure?");')
+        p And if you're feeling destructive…
+        input(type='hidden', name='_method', value='DELETE')
+        input(type='submit', value='Delete Source')

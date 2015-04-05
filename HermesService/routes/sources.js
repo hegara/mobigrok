@@ -10,7 +10,8 @@ exports.list = function (req, res, next) {
     Source.getAll(function (err, sources) {
         if (err) return next(err);
         res.render('sources', {
-            sources: sources
+            sources: sources,
+            alltypes: ['git','mercurial','svn']
         });
     });
 };
@@ -45,7 +46,8 @@ exports.show = function (req, res, next) {
             });
         });*/
         res.render('source', {
-            source: source
+            source: source,
+            alltypes: ['git','mercurial','svn']
         });
     });
 };

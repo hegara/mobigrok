@@ -48,6 +48,7 @@ app.get('/users', routes.users.list);
 app.post('/users', routes.users.create);
 app.get('/users/:id', routes.users.show);
 app.delete('/users/:id', routes.users.del);
+app.post('/users/:id', routes.users.edit);
 
 app.post('/users/:id/follow', routes.users.follow);
 app.post('/users/:id/unfollow', routes.users.unfollow);
@@ -56,6 +57,7 @@ app.get('/sources', routes.sources.list);
 app.post('/sources', routes.sources.create);
 app.get('/sources/:id', routes.sources.show);
 app.delete('/sources/:id', routes.sources.del);
+app.post('/sources/:id', routes.sources.edit);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));
