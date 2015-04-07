@@ -30,7 +30,7 @@ Source.defineProperty = function (prop) {
         set: function (name) {
             this._node.data[prop] = name;
         }
-    });    
+    });
 }
 
 Source.defineProperty('name');
@@ -97,7 +97,7 @@ Source.prototype.getEnlisters = function (callback) {
                 continue;
             } else if (follows) {
                 enlisters.push(other);
-            } 
+            }
         }
 
         callback(null, enlisters);

@@ -2,6 +2,7 @@
 // Routes to CRUD users.
 
 var User = require('../models/user');
+var Source = require('../models/source');
 
 /**
  * GET /users
@@ -37,10 +38,15 @@ exports.show = function (req, res, next) {
         // TODO also fetch and show followers? (not just follow*ing*)
         user.getFollowingAndOthers(function (err, following, others) {
             if (err) return next(err);
-            res.render('user', {
-                user: user,
-                following: following,
-                others: others
+            user.getEnlistingAndOthers(function (err, enlisting, sources) {
+                if (err) return next(err);
+                res.render('user', {
+                    user: user,
+                    following: following,
+                    others: others,
+                    enlisting: enlisting,
+                    sources: sources
+                });
             });
         });
     });

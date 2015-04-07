@@ -31,6 +31,30 @@ block content
     else
         p There's no one else left for #{user.name} to follow!
 
+    if enlisting.length
+        p #{user.name} is enlisting #{enlisting.length} source repos:
+        ul.enlistings
+            for source in enlisting
+                li.enlisting
+                    form(action='/users/#{user.id}/unlist', method='POST')
+                        a(href='/sources/#{source.id}') #{source.name}
+                        input(type='hidden', name='source[id]', value='#{source.id}')
+                        input(type='submit', class='unlist', value='x')
+    else
+        p #{user.name} isn't enlisting any source for now.
+
+    if sources.length
+        form(action='/users/#{user.id}/enlist', method='POST')
+            p Enlist source for this user:
+            label
+                select(name='source[id]', required)
+                    option(value='')
+                    for source in sources
+                        option(value='#{source.id}') #{source.name}
+            input(type='submit', value='Enlist')
+    else
+        p There's no sources left for #{user.name} to enlist!
+
     form(action='/users/#{user.id}', method='POST')
         p Edit this user:
         input(type='text', name='name', placeholder='#{user.name}', required)

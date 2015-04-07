@@ -30,7 +30,7 @@ User.defineProperty = function (prop) {
         set: function (name) {
             this._node.data[prop] = name;
         }
-    });    
+    });
 }
 
 User.defineProperty('name');
@@ -126,6 +126,39 @@ User.prototype.getFollowingAndOthers = function (callback) {
         }
 
         callback(null, following, others);
+    });
+};
+
+User.prototype.getEnlistingAndOthers = function (callback) {
+    // query all sources and whether we enlist each one or not:
+    var query = [
+        'MATCH (user:User), (source:Source)',
+        'OPTIONAL MATCH (user) -[rel:enlist]-> (source)',
+        'WHERE ID(user) = {userId}',
+        'RETURN source, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
+    ].join('\n')
+
+    var params = {
+        userId: this.id,
+    };
+
+    db.query(query, params, function (err, results) {
+        if (err) callback(err);
+
+        enlisting = [];
+        others = [];
+
+        for (var i = 0 ; i < results.length ; i++) {
+            var other = new User(results[i]['source']);
+            var enlists = results[i]['COUNT(rel)'];
+            if (enlists) {
+                enlisting.push(other);
+            } else {
+                others.push(other);
+            }
+        }
+
+        callback(null, enlisting, others);
     });
 };
 
