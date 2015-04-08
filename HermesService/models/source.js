@@ -73,33 +73,29 @@ Source.prototype.del = function (callback) {
 Source.prototype.getEnlisters = function (callback) {
     // query all Sources and whether we follow each one or not:
     var query = [
-        'MATCH (source:Source), (other:User)',
-        'OPTIONAL MATCH (source) <-[rel:enlist]- (other)',
+        'MATCH (source:Source), (enlister:User)',
+        'OPTIONAL MATCH (source) <-[rel:enlist]- (enlister)',
         'WHERE ID(source) = {SourceId}',
-        'RETURN other, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
+        'RETURN enlister, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
     ].join('\n')
 
     var params = {
         SourceId: this.id,
     };
 
-    var Source = this;
     db.query(query, params, function (err, results) {
         if (err) return callback(err);
 
         var enlisters = [];
 
         for (var i = 0; i < results.length; i++) {
-            var other = new Source(results[i]['other']);
+            var enlister = new Source(results[i]['enlister']);
             var follows = results[i]['COUNT(rel)'];
 
-            if (Source.id === other.id) {
-                continue;
-            } else if (follows) {
-                enlisters.push(other);
+            if (follows) {
+                enlisters.push(enlister);
             }
         }
-
         callback(null, enlisters);
     });
 };

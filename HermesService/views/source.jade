@@ -4,6 +4,17 @@ block content
     h1 #{source.name}
     p #{source.url}
 
+    if enlisters.length
+        ul.enlisters
+            for enlister in enlisters
+                li.enlister
+                    form(action='/users/#{enlister.id}/unlist', method='POST')
+                        a(href='/users/#{enlister.id}') #{enlister.name}
+                        input(type='hidden', name='source[id]', value='#{source.id}')
+                        input(type='submit', class='unlist', value='x')
+    else
+        p #{source.name} hasn't been enlisted by anyone currently.
+
     p
         a(href='/sources') Back to all sources
 

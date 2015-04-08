@@ -37,17 +37,12 @@ exports.show = function (req, res, next) {
     Source.get(req.params.id, function (err, source) {
         if (err) return next(err);
         // TODO also fetch and show followers? (not just follow*ing*)
-        /*source.getFollowingAndOthers(function (err, enlistedby, others) {
-            if (err) return next(err);
+        source.getEnlisters(function (err, enlisters){
             res.render('source', {
                 source: source,
-                enlistedby: enlistedby,
-                others: others
+                enlisters: enlisters,
+                alltypes: ['git','mercurial','svn']
             });
-        });*/
-        res.render('source', {
-            source: source,
-            alltypes: ['git','mercurial','svn']
         });
     });
 };
