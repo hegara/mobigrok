@@ -53,6 +53,9 @@ app.post('/users/:id', routes.users.edit);
 app.post('/users/:id/follow', routes.users.follow);
 app.post('/users/:id/unfollow', routes.users.unfollow);
 
+app.post('/users/:id/enlist', routes.users.enlist);
+app.post('/users/:id/unlist', routes.users.unlist);
+
 app.get('/sources', routes.sources.list);
 app.post('/sources', routes.sources.create);
 app.get('/sources/:id', routes.sources.show);

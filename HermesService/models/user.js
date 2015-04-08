@@ -90,6 +90,29 @@ User.prototype.unfollow = function (other, callback) {
     });
 };
 
+User.prototype.enlist = function (source, callback) {
+    this._node.createRelationshipTo(source._node, 'enlist', {}, function (err, rel) {
+        callback(err);
+    });
+};
+
+User.prototype.unlist = function (source, callback) {
+    var query = [
+        'MATCH (user:User) -[rel:enlist]-> (source:Source)',
+        'WHERE ID(user) = {userId} AND ID(source) = {sourceId}',
+        'DELETE rel',
+    ].join('\n')
+
+    var params = {
+        userId: this.id,
+        sourceId: source.id,
+    };
+
+    db.query(query, params, function (err) {
+        callback(err);
+    });
+};
+
 // calls callback w/ (err, following, others) where following is an array of
 // users this user follows, and others is all other users minus him/herself.
 User.prototype.getFollowingAndOthers = function (callback) {

@@ -111,3 +111,35 @@ exports.unfollow = function (req, res, next) {
         });
     });
 };
+
+/**
+ * POST /users/:id/enlist
+ */
+exports.enlist = function (req, res, next) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return next(err);
+        Source.get(req.body.source.id, function (err, source) {
+            if (err) return next(err);
+            user.enlist(source, function (err) {
+                if (err) return next(err);
+                res.redirect('/users/' + user.id);
+            });
+        });
+    });
+};
+
+/**
+ * POST /users/:id/unlist
+ */
+exports.unlist = function (req, res, next) {
+    User.get(req.params.id, function (err, user) {
+        if (err) return next(err);
+        Source.get(req.body.source.id, function (err, source) {
+            if (err) return next(err);
+            user.unlist(source, function (err) {
+                if (err) return next(err);
+                res.redirect('/users/' + user.id);
+            });
+        });
+    });
+};
