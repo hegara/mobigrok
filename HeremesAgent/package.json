@@ -1,6 +1,6 @@
 {
   "name": "HeremesAgent",
-  "description": "Agents execute queued tasks.",
+  "description": "Agents execute queued tasks.x",
   "author": "CD.Wang<chundongwang@gmail.com>",
   "version": "0.0.1",
   "repository": "https://github.com/hegara/mobigrok.git",
@@ -16,7 +16,8 @@
     "morgan": "^1.2.2",
     "multer": "^0.1.3",
     "serve-favicon": "^2.0.1",
-    "neo4j": "~1.1"
+    "neo4j": "~1.1",
+    "zmq": "^2.11"
   },
 
   "devDependencies": {
