@@ -6,7 +6,7 @@ var Indexer = module.exports = function Indexer(source, target) {
 };
 
 // use callback for error reporting or return the object
-Indexer.prototype.prepare() = function(callback) {
+Indexer.prototype.prepare = function(callback) {
     // 1. check data legitimacy (url, type, etc.)
     // 2. check the existence of tools (git, etc.)
     // 3. check the appropriate permission (file access, etc.)
@@ -14,7 +14,9 @@ Indexer.prototype.prepare() = function(callback) {
 };
 
 // index the source code with opengrok
-Indexer.prototype.index() = function(callback) {
+Indexer.prototype.index = function(callback) {
+    // call opengrok to index
+    console.log("Indexing "+this._source);
     callback(null, true);
 };
 
