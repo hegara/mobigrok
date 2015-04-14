@@ -2,11 +2,14 @@
 // User model logic.
 
 var neo4j = require('neo4j');
-var db = new neo4j.GraphDatabase(
-    process.env['NEO4J_URL'] ||
-    process.env['GRAPHENEDB_URL'] ||
-    'http://localhost:7474'
-);
+var neo4j_url = process.env['NEO4J_URL'] || process.env['GRAPHENEDB_URL'] || 'http://localhost:7474';
+var neo4j_auth = process.env['NEO4J_AUTH'] || process.env['GRAPHENEDB_AUTH']  || null;
+var db = new neo4j.GraphDatabase({
+    url:neo4j_url,
+    auth:neo4j_auth
+});
+
+console.log('auth: '+process.env['NEO4J_AUTH']);
 
 // private constructor:
 
@@ -62,7 +65,7 @@ User.prototype.del = function (callback) {
         userId: this.id
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -85,7 +88,7 @@ User.prototype.unfollow = function (other, callback) {
         otherId: other.id,
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -108,7 +111,7 @@ User.prototype.unlist = function (source, callback) {
         sourceId: source.id,
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -129,7 +132,7 @@ User.prototype.getFollowingAndOthers = function (callback) {
     };
 
     var user = this;
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
 
         var following = [];
@@ -165,7 +168,7 @@ User.prototype.getEnlistingAndOthers = function (callback) {
         userId: this.id,
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) callback(err);
 
         enlisting = [];
@@ -200,7 +203,8 @@ User.getAll = function (callback) {
         'RETURN user',
     ].join('\n');
 
-    db.query(query, null, function (err, results) {
+    console.log("getAll - db obj"+db.query);
+    db.cypher(query, function (err, results) {
         if (err) return callback(err);
         var users = results.map(function (result) {
             return new User(result['user']);
@@ -228,7 +232,7 @@ User.create = function (data, callback) {
         data: data
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
         var user = new User(results[0]['user']);
         callback(null, user);
