@@ -1,3 +1,7 @@
+var zmq = require('zmq')
+  , sock_enlist = zmq.socket('pull')
+  , sock_index = zmq.socket('push');
+
 // private constructor:
 
 var Enlister = module.exports = function Indexer(name, url, type) {
@@ -28,5 +32,21 @@ Enlister.create = function(data, callback) {
     enlister.prepare(function(err, result){
         if (err) callback(err);
         callback(null, result);
+    });
+};
+
+Enlister.start_service = function(data, callback) {
+    sock_enlist.connect(data.enlist_url);
+    sock_index.bindSync(data.index_url);
+    console.log('Worker connected to enlist queue: '+data.enlist_url);
+    sock_enlist.on('message', function(name, url, type){
+        Enlister.create({name:name,url:url,type:type}, function(err, result){
+            if (err) console.log('enlist prepare err');
+            result.enlist(function(err, result){
+                if (err) console.log('enlist err');
+                console.log('enlist worker: %s[%s]: %s', result._name, result._type, result._url);
+                sock_index.send([result._path, result._path+"\\..\\"+result._name+"-data\\"]);
+            });
+        });
     });
 };
