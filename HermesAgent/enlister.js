@@ -19,8 +19,8 @@ Enlister.prototype.prepare = function(callback) {
 // enlist the source code with given type of repo tool
 // and return the folder containing the source via callback
 Enlister.prototype.enlist = function(callback) {
-    console.log("Enlisting "+this._name+"["+this._type"]:"+this._url);
-    callback(null, this._path);
+    console.log("Enlisting "+this._name+"["+this._type+"]:"+this._url);
+    callback(null, this);
 };
 
 Enlister.create = function(data, callback) {
