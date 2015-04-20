@@ -29,7 +29,7 @@ Enlister.prototype.prepare = function(callback) {
         callback("Not allowed type: "+enlister._type);
         return;
     } else if (!enlister._url.match(Enlister.UrlPatterns[idx_type])) {
-        callback("Not supported url: "+enlister._url);
+        callback("Not supported url: "+enlister._url+'with pattern: '+Enlister.UrlPatterns[idx_type]);
         return;
     } else if (enlister._name.length>Enlister.MaxNameLength || !enlister._name.match(Enlister.NameRule)) {
         callback("Invalid name["+enlister._name.length+"]: "+enlister._name);
@@ -38,7 +38,10 @@ Enlister.prototype.prepare = function(callback) {
     // 2. check the existence of tools (git, etc.)
     if (this._type === "git") {
         var git_version = spawn("git", ["--version"]);
+        var received_git_version = false;
         git_version.stdout.on('data', function(data){
+            if (received_git_version) return;
+            received_git_version = true;
             var stdout_text = data.toString();
             if (stdout_text.match("^git version [0-9]+\.[0-9]+")) {
                 // TODO: check version number?
@@ -49,8 +52,8 @@ Enlister.prototype.prepare = function(callback) {
                 mkdirp(enlister._path, function (err) {
                     if (err) callback(err);
                     else {
-                        // 5. enlist!
-                        callback(null, enlister);   
+                        // 5. ready to enlist!
+                        callback(null, enlister);
                     }
                 });         
             } else {
@@ -97,10 +100,10 @@ Enlister.start_service = function(data, callback) {
             url:url.toString(),
             type:type.toString()
         }, function(err, result){
-            if (err) console.error('enlist prepare err:\n'+err);
+            if (err) callback('enlist prepare err:\n'+err);
             else {
                 result.enlist(function(err, result){
-                    if (err) console.error('enlist err:\n'+err);
+                    if (err) callback('enlist err:\n'+err);
                     else {
                         console.timeEnd('enlist-'+result._name);
                         console.info('enlist worker: %s[%s]: %s', result._name, result._type, result._url);

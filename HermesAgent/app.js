@@ -5,7 +5,8 @@ var Indexer = require('./indexer')
 var server_config = {
                         enlist_url: 'tcp://127.0.0.1:3000',
                         index_url: 'tcp://127.0.0.1:3001',
-                        root_folder: path.resolve(path.join(__dirname, '..', 'tmp'))
+                        root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
+                        opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar'
                     };
 
 var start_enlister = false;
@@ -24,12 +25,16 @@ if (process.argv.length<3 && !start_indexer && !start_enlister) {
 }
 
 if (start_enlister) { 
-    Enlister.start_service(server_config);
+    Enlister.start_service(server_config, function(err){
+        console.error('enlist service error:\n'+err);
+    });
     started = true;
 }
 
 if (start_indexer) {
-    Indexer.start_service(server_config);
+    Indexer.start_service(server_config, function(err){
+        console.error('index service error:\n'+err);
+    });
     started = true; 
 } 
 

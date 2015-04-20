@@ -1,5 +1,8 @@
 var zmq = require('zmq')
-  , sock_index = zmq.socket('pull');
+  , fs = require('fs')
+  , mkdirp = require('mkdirp')
+  , sock_index = zmq.socket('pull')
+  , spawn = require('child_process').spawn;
 
 // private constructor:
 
@@ -8,17 +11,55 @@ var Indexer = module.exports = function Indexer(source, target) {
     this._target = target;
 };
 
+Indexer.OpenGrokPath = null;
+
 // use callback for error reporting or return the object
 Indexer.prototype.prepare = function(callback) {
     // 1. check data legitimacy (source existence, target write access, etc.)
-    // 2. check the existence of tools (jre, opengrok, etc.)
-    callback(null, this);
+    var indexer = this;
+    fs.exists(indexer._source, function (exists) {
+        if (!exists) callback('Cannot find source!'+indexer._source);
+        else {
+            // 2. check the existence of tools (jre, opengrok, etc.)           
+            fs.exists(Indexer.OpenGrokPath, function (exists) {
+                if (!exists) callback('Cannot find opengrok!'+Indexer.OpenGrokPath);
+                else { 
+                    var java_version = spawn("java", ["-version"]);
+                    var received_java_version = false;
+                    console.info('checking java_version: '+Indexer.OpenGrokPath);
+                    java_version.stderr.on('data', function(data){
+                        if (received_java_version) return;
+                        received_java_version = true;
+                        console.info('java_version result back: '+data.toString());
+                        var stdout_text = data.toString();
+                        // TODO: check version number?
+                        if (stdout_text.match("^java version \"[0-9]+\.[0-9]+")) {
+                            // 3. make directory
+                            console.info('to make dir: '+indexer._target)
+                            mkdirp(indexer._target, function (err) {
+                                if (err) callback(err);
+                                else {
+                                    // 4. ready to index!
+                                    callback(null, indexer);
+                                }
+                            });       
+                        } else {
+                            console.warn("Dropped the ball!! Cannot find proper version of java.");
+                            console.warn("  got: "+stdout_text);
+                            callback("Cannot find proper version of java. Found: "+stdout_text);
+                            return;
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 // index the source code with opengrok
 Indexer.prototype.index = function(callback) {
     // call opengrok to index
-    console.log("Indexing "+this._source+" to "+this._target);
+    console.info("Indexing "+this._source+" to "+this._target);
     callback(null, this);
 };
 
@@ -26,20 +67,34 @@ Indexer.create = function(data, callback) {
     var indexer = new Indexer(data.source, data.target);
     indexer.prepare(function(err, result){
         if (err) callback(err);
-        callback(null, result);
+        else {
+            callback(null, result);
+        }
     });
 };
 
 Indexer.start_service = function(data, callback) {
     sock_index.connect(data.index_url);
-    console.log('Worker connected to index queue: '+data.index_url);
-    sock_index.on('message', function(src, dst){
-        Indexer.create({source:src,target:dst}, function(err, result){
-            if (err) console.log('index prepare err');
-            result.index(function(err, result){
-                if (err) console.log('index err');
-                console.log('index worker: %s -> %s', result._source, result._target);
+    if (!data.opengrok_path || !data.opengrok_path.match('.jar$')) {
+        callback('Require valid opengrok_path to be set!');
+    } else {
+        Indexer.OpenGrokPath = data.opengrok_path;
+        console.info('Worker connected to index queue: '+data.index_url);
+        sock_index.on('message', function(src, dst){
+            console.time('index-'+src);
+            Indexer.create({
+                source:src.toString(),
+                target:dst.toString()
+            }, function(err, result){
+                if (err) callback('index prepare err\n'+err);
+                result.index(function(err, result){
+                    if (err) callback('index err:\n'+err);
+                    else {
+                        console.timeEnd('index-'+result._source);
+                        console.info('index worker: %s -> %s', result._source, result._target);
+                    }
+                });
             });
         });
-    });
+    }
 };
