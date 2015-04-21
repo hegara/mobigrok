@@ -11,6 +11,7 @@ var Enlister = module.exports = function Enlister(name, url, type) {
     this._name = name;
     this._url = url;
     this._type = type;
+    this._path = null;
 };
 
 Enlister.RootFolder = __dirname;
@@ -40,8 +41,10 @@ Enlister.prototype.prepare = function(callback) {
         var git_version = spawn("git", ["--version"]);
         var received_git_version = false;
         git_version.stdout.on('data', function(data){
+            // we only care the first line.
             if (received_git_version) return;
             received_git_version = true;
+
             var stdout_text = data.toString();
             if (stdout_text.match("^git version [0-9]+\.[0-9]+")) {
                 // TODO: check version number?
@@ -74,8 +77,25 @@ Enlister.prototype.prepare = function(callback) {
 // enlist the source code with given type of repo tool
 // and return the folder containing the source via callback
 Enlister.prototype.enlist = function(callback) {
-    console.info("Enlisting "+this._name+"["+this._type+"]:"+this._url);
-    callback(null, this);
+    var enlister = this;
+    console.info("Enlisting "+enlister._name+"["+enlister._type+"]:"+enlister._url);    
+    var git_clone = spawn("git", ["clone", "--progress",
+                "--recursive", "--depth", "1", enlister._url, enlister._path]);
+    git_clone.stdout.on('data', function(data) {
+        console.info(data.toString());
+    });
+    git_clone.stderr.on('data', function(data) {
+        console.error(data.toString());
+    });
+    git_clone.on('close', function(code) {
+        if (code !== 0) {
+            console.log('Enlist process exited with code ' + code);  
+            callback('Enlist process exited with code ' + code);
+        } else {
+            console.info("Enlist done with code: "+code);   
+            callback(null, enlister);
+        }
+    });
 };
 
 Enlister.create = function(data, callback) {
