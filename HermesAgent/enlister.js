@@ -107,11 +107,11 @@ Enlister.create = function(data, callback) {
     });
 };
 
-Enlister.start_service = function(data, callback) {
-    sock_enlist.connect(data.enlist_url);
-    sock_index.bindSync(data.index_url);
-    console.info('Worker connected to enlist queue: '+data.enlist_url);
-    Enlister.RootFolder = data.root_folder||Enlister.RootFolder;
+Enlister.start_service = function(config, callback) {
+    sock_enlist.connect(config.enlist_url);
+    sock_index.bindSync(config.index_url);
+    console.info('Worker connected to enlist queue: '+config.enlist_url);
+    Enlister.RootFolder = config.root_folder||Enlister.RootFolder;
     console.info('Enlister is using '+Enlister.RootFolder+' as root.');
     sock_enlist.on('message', function(name, url, type){
         console.time('enlist-'+name);
@@ -128,7 +128,7 @@ Enlister.start_service = function(data, callback) {
                         console.timeEnd('enlist-'+result._name);
                         console.info('enlist worker: %s[%s]: %s', result._name, result._type, result._url);
                         sock_index.send([result._path, 
-                            path.resolve(path.join(result._path,"..",result._name+"=data"))]);
+                            path.resolve(path.join(result._path,"..",result._name+"=grok"))]);
                     }
                 });
             }

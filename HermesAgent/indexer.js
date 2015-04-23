@@ -3,6 +3,7 @@ var zmq = require('zmq')
   , fs = require('fs')
   , mkdirp = require('mkdirp')
   , sock_index = zmq.socket('pull')
+  , sock_deploy = zmq.socket('push')
   , spawn = require('child_process').spawn;
 
 // private constructor:
@@ -97,16 +98,17 @@ Indexer.create = function(data, callback) {
     });
 };
 
-Indexer.start_service = function(data, callback) {
-    sock_index.connect(data.index_url);
-    if (!data.opengrok_path || !data.opengrok_path.match('.jar$')) {
+Indexer.start_service = function(config, callback) {
+    sock_index.connect(config.index_url);
+    sock_deploy.bindSync(config.deploy_url);
+    if (!config.opengrok_path || !config.opengrok_path.match('.jar$')) {
         callback('Require valid opengrok_path to be set!');
-    } else if (!data.ctags_path) {
+    } else if (!config.ctags_path) {
         callback('Require valid ctags_path to be set!');
     } else {
-        Indexer.OpenGrokPath = data.opengrok_path;
-        Indexer.CtagsPath = data.ctags_path;
-        console.info('Worker connected to index queue: '+data.index_url);
+        Indexer.OpenGrokPath = config.opengrok_path;
+        Indexer.CtagsPath = config.ctags_path;
+        console.info('Worker connected to index queue: '+config.index_url);
         sock_index.on('message', function(src, dst){
             console.time('index-'+src);
             Indexer.create({
@@ -119,6 +121,7 @@ Indexer.start_service = function(data, callback) {
                     else {
                         console.timeEnd('index-'+result._source);
                         console.info('index worker: %s -> %s', result._source, result._target);
+                        sock_deploy
                     }
                 });
             });

@@ -5,6 +5,7 @@ var Indexer = require('./indexer')
 var server_config = {
                         enlist_url: 'tcp://127.0.0.1:3000',
                         index_url: 'tcp://127.0.0.1:3001',
+                        deploy_url: 'tcp://127.0.0.1:3002',
                         root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
                         opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar',
                         ctags_path: 'C:\\tools\\ctags58\\ctags.exe'
