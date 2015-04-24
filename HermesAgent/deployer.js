@@ -4,14 +4,46 @@ var zmq = require('zmq')
 
 // private constructor:
 
-var Deployer = module.exports = function Deployer(source, target) {
-    this._source = source;
-    this._target = target;
-    this._config = null;
+var Deployer = module.exports = function Deployer(pathname, index_data_path) {
+    this._pathname = pathname;
+    this._index = index_data_path;
 };
 
 // deploy the opengrok folder onto tomcat
 Deployer.prototype.deploy = function(callback) {
+	var deployer = this;
+    var options = {
+      auth: Deployer.TomcatAuth,
+      hostname: Deployer.TomcatHostname,
+      port: Deployer.TomcatPort,
+      path: Deployer.TomcatPath.replace('{name}', deployer._pathname).replace('{index}', deployer._index),
+      method: Deployer.TomcatMethod,
+    };
+    
+    var content = '';
+
+    var req = require('http').request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        content += chunk;
+
+      });
+      res.on('err', function (chunk) {
+        grunt.log.error(chunk);
+        done(false);
+      });
+      res.on('end', function (chunk) {
+        if(/^OK.*$/m.test(content)) {
+          grunt.log.writeln(content);
+          done();
+        }
+        else {
+          grunt.log.error(content);
+          done(false);
+        }
+      });
+    });
+
 }
 
 Deployer.create = function(data, callback) {
@@ -26,29 +58,31 @@ Deployer.create = function(data, callback) {
 
 Deployer.start_service = function(config, callback) {
     sock_deploy.connect(config.deploy_url);
-    if (!config.opengrok_path || !config.opengrok_path.match('.jar$')) {
-        callback('Require valid opengrok_path to be set!');
-    } else if (!config.ctags_path) {
-        callback('Require valid ctags_path to be set!');
+    if (!config.auth || !config.hostname || !config.port || !config.path) {
+        callback('Require valid tomcat configuration to be set!');
     } else {
-        Deployer.OpenGrokPath = config.opengrok_path;
-        Deployer.CtagsPath = config.ctags_path;
+        Deployer.TomcatAuth = config.auth;
+        Deployer.TomcatHostname = config.hostname||'localhost';
+        Deployer.TomcatPort = config.port||8080;
+        Deployer.TomcatPath = config.path||'/manager/text/deploy?path={name}&war={path}&update=false';
+        Deployer.TomcatMethod = config.method||'PUT';
         console.info('Worker connected to deploy queue: '+data.deploy_url);
-        sock_deploy.on('message', function(src, dst){
-            console.time('deploy-'+src);
+        sock_deploy.on('message', function(name, index_data){
+            console.time('deploy-'+name);
             Deployer.create({
-                source:src.toString(),
-                target:dst.toString()
+                pathname:name.toString(),
+                indexed_data_path:index_data.toString()
             }, function(err, result){
                 if (err) callback('deploy prepare err\n'+err);
                 result.deploy(function(err, result){
                     if (err) callback('deploy err:\n'+err);
                     else {
-                        console.timeEnd('deploy-'+result._source);
-                        console.info('deploy worker: %s -> %s', result._source, result._target);
+                        console.timeEnd('deploy-'+result._pathname);
+                        console.info('deploy worker: %s -> %s', result._pathname, result._index);
                     }
                 });
             });
         });
     }
 };
+e
