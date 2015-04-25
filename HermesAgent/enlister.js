@@ -127,7 +127,7 @@ Enlister.start_service = function(config, callback) {
                     else {
                         console.timeEnd('enlist-'+result._name);
                         console.info('enlist worker: %s[%s]: %s', result._name, result._type, result._url);
-                        sock_index.send([result._path, 
+                        sock_index.send([result._name, result._path, 
                             path.resolve(path.join(result._path,"..",result._name+"=grok"))]);
                     }
                 });

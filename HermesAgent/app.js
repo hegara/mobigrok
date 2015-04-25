@@ -1,6 +1,7 @@
 // worker.js
 var Indexer = require('./indexer')
   , Enlister = require('./enlister')
+  , Deployer = require('./deployer')
   , path = require('path');
 var server_config = {
                         enlist_url: 'tcp://127.0.0.1:3000',
@@ -12,23 +13,25 @@ var server_config = {
                         tomcat_auth: 'tomcat:tomcat',
                         tomcat_hostname: 'localhost',
                         tomcat_port: '8080',
-                        tomcat_path: '/manager/text/deploy?path={name}&war={path}&update=false',
-                        tomcat_method: 'PUT',
                     };
 
 var start_enlister = false;
 var start_indexer = false;
+var start_deployer = false;
+var started = false;
 
 process.argv.forEach(function (v, i, argv) {
     if (i<2) return;
     if (v === "enlist") start_enlister = true;
     else if (v === "index") start_indexer = true; 
+    else if (v === "deploy") start_deployer = true; 
 });
 
-if (process.argv.length<3 && !start_indexer && !start_enlister) {
-    // nothing started. by default kick off both
+if (process.argv.length<3) {
+    // nothing started. by default kick off all
     start_enlister = true;
     start_indexer = true;
+    start_deployer = true;
 }
 
 if (start_enlister) { 
@@ -45,7 +48,14 @@ if (start_indexer) {
     started = true; 
 } 
 
-if (!start_indexer && !start_enlister) {
-    console.error('Nothing to start. exiting...');
+if (start_deployer) {
+    Deployer.start_service(server_config, function(err){
+        console.error('deploy service error:\n'+err);
+    });
+    started = true;
+}
+
+if (!started) {
+    console.error('Nothing started. exiting...');
     process.exit(0);
 }

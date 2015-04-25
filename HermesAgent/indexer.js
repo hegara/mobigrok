@@ -8,7 +8,8 @@ var zmq = require('zmq')
 
 // private constructor:
 
-var Indexer = module.exports = function Indexer(source, target) {
+var Indexer = module.exports = function Indexer(name, source, target) {
+    this._name = name;
     this._source = source;
     this._target = target;
     this._config = null;
@@ -109,9 +110,10 @@ Indexer.start_service = function(config, callback) {
         Indexer.OpenGrokPath = config.opengrok_path;
         Indexer.CtagsPath = config.ctags_path;
         console.info('Worker connected to index queue: '+config.index_url);
-        sock_index.on('message', function(src, dst){
-            console.time('index-'+src);
+        sock_index.on('message', function(name, src, dst){
+            console.time('index-'+name);
             Indexer.create({
+                name: name.toString(),
                 source:src.toString(),
                 target:dst.toString()
             }, function(err, result){
@@ -119,9 +121,9 @@ Indexer.start_service = function(config, callback) {
                 result.index(function(err, result){
                     if (err) callback('index err:\n'+err);
                     else {
-                        console.timeEnd('index-'+result._source);
+                        console.timeEnd('index-'+result._name);
                         console.info('index worker: %s -> %s', result._source, result._target);
-                        sock_deploy
+                        sock_deploy.send([result._name, result._source, result._target]);
                     }
                 });
             });
