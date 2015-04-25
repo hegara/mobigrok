@@ -8,7 +8,12 @@ var server_config = {
                         deploy_url: 'tcp://127.0.0.1:3002',
                         root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
                         opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar',
-                        ctags_path: 'C:\\tools\\ctags58\\ctags.exe'
+                        ctags_path: 'C:\\tools\\ctags58\\ctags.exe',                        
+                        tomcat_auth: 'tomcat:tomcat',
+                        tomcat_hostname: 'localhost',
+                        tomcat_port: '8080',
+                        tomcat_path: '/manager/text/deploy?path={name}&war={path}&update=false',
+                        tomcat_method: 'PUT',
                     };
 
 var start_enlister = false;

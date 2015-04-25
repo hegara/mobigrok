@@ -58,14 +58,14 @@ Deployer.create = function(data, callback) {
 
 Deployer.start_service = function(config, callback) {
     sock_deploy.connect(config.deploy_url);
-    if (!config.auth || !config.hostname || !config.port || !config.path) {
+    if (!config.tomcat_auth || !config.tomcat_hostname || !config.tomcat_port || !config.tomcat_path) {
         callback('Require valid tomcat configuration to be set!');
     } else {
-        Deployer.TomcatAuth = config.auth;
-        Deployer.TomcatHostname = config.hostname||'localhost';
-        Deployer.TomcatPort = config.port||8080;
-        Deployer.TomcatPath = config.path||'/manager/text/deploy?path={name}&war={path}&update=false';
-        Deployer.TomcatMethod = config.method||'PUT';
+        Deployer.TomcatAuth = config.tomcat_auth;
+        Deployer.TomcatHostname = config.tomcat_hostname||'localhost';
+        Deployer.TomcatPort = config.tomcat_port||8080;
+        Deployer.TomcatPath = config.tomcat_path||'/manager/text/deploy?path={name}&war={path}&update=false';
+        Deployer.TomcatMethod = config.tomcat_method||'PUT';
         console.info('Worker connected to deploy queue: '+data.deploy_url);
         sock_deploy.on('message', function(name, index_data){
             console.time('deploy-'+name);
