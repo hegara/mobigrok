@@ -9,6 +9,7 @@ var server_config = {
                         deploy_url: 'tcp://127.0.0.1:3002',
                         root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
                         opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar',
+                        opengrok_war: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\source.war',
                         ctags_path: 'C:\\tools\\ctags58\\ctags.exe',                        
                         tomcat_auth: 'tomcat:tomcat',
                         tomcat_hostname: 'localhost',

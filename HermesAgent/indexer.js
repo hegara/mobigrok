@@ -17,6 +17,7 @@ var Indexer = module.exports = function Indexer(name, source, target) {
 
 Indexer.OpenGrokPath = null;
 Indexer.CtagsPath = null;
+Indexer.TemplateXml = path.join(__dirname,'web.xml');
 
 // use callback for error reporting or return the object
 Indexer.prototype.prepare = function(callback) {
@@ -84,13 +85,33 @@ Indexer.prototype.index = function(callback) {
             callback('Indexing process exited with code ' + code);
         } else {
             console.info("Index done with code: "+code+" under "+indexer._config);
-            callback(null, indexer);
+            indexer.generateWebXml(Indexer.TemplateXml, function(err, result){
+                if (err) callback(err);
+                else {                
+                    callback(null, result);
+                }
+            });
         }
     });
 };
 
+Indexer.prototype.generateWebXml = function(template_xml, callback) {
+    var indexer = this;
+    fs.readfile(template_xml, function(err, data){
+        data = data.replace('{config}', indexer._config)
+                   .replace('{src_root}', indexer._source)
+                   .replace('{index_root}', indexer._target);
+        fs.writefile(path.join(indexer._target, 'web.xml'), data, function(err){
+            if (err) callback(err);
+            else {
+                callback(null, indexer);
+            }
+        });
+    });
+};
+
 Indexer.create = function(data, callback) {
-    var indexer = new Indexer(data.source, data.target);
+    var indexer = new Indexer(data.name, data.source, data.target);
     indexer.prepare(function(err, result){
         if (err) callback(err);
         else {
