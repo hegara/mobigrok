@@ -20,7 +20,7 @@ Deployer.TomcatAuth = null;
 Deployer.TomcatHostname = 'localhost';
 Deployer.TomcatPort = 8080;
 Deployer.TomcatPath = '/manager/text/deploy?';
-Deployer.TomcatMethod = 'PUT';
+Deployer.TomcatMethod = 'GET';
 Deployer.OpenGrokWar = null;
 
 Deployer.prototype.prepare = function(callback) {
@@ -53,7 +53,7 @@ Deployer.prototype.deploy = function(callback) {
     };
     var options = {
         auth: Deployer.TomcatAuth,
-        hostname: Deployer.TomcatHostname,
+        host: Deployer.TomcatHostname,
         port: Deployer.TomcatPort,
         path: Deployer.TomcatPath+querystring.stringify(query),
         method: Deployer.TomcatMethod,
@@ -79,6 +79,12 @@ Deployer.prototype.deploy = function(callback) {
             }
         });
     });
+
+    req.on('error', function(e) {
+      console.error('problem with request: ' + e.message);
+    });
+
+    req.end();
 };
 
 Deployer.create = function(data, callback) {
