@@ -11,9 +11,9 @@ var server_config = {
                         opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar',
                         opengrok_war: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\source.war',
                         ctags_path: 'C:\\tools\\ctags58\\ctags.exe',                        
-                        tomcat_auth: 'tomcat:tomcat',
+                        tomcat_auth: 'jewelry:hegara',
                         tomcat_hostname: 'localhost',
-                        tomcat_port: '8080',
+                        tomcat_port: 8080,
                     };
 
 var start_enlister = false;

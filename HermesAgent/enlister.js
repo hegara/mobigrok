@@ -111,6 +111,7 @@ Enlister.start_service = function(config, callback) {
     sock_enlist.connect(config.enlist_url);
     sock_index.bindSync(config.index_url);
     console.info('Worker connected to enlist queue: '+config.enlist_url);
+    console.info('Worker bound to index queue: '+config.index_url);
     Enlister.RootFolder = config.root_folder||Enlister.RootFolder;
     console.info('Enlister is using '+Enlister.RootFolder+' as root.');
     sock_enlist.on('message', function(name, url, type){

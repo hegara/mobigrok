@@ -97,11 +97,12 @@ Indexer.prototype.index = function(callback) {
 
 Indexer.prototype.generateWebXml = function(template_xml, callback) {
     var indexer = this;
-    fs.readfile(template_xml, function(err, data){
-        data = data.replace('{config}', indexer._config)
-                   .replace('{src_root}', indexer._source)
-                   .replace('{index_root}', indexer._target);
-        fs.writefile(path.join(indexer._target, 'web.xml'), data, function(err){
+    fs.readFile(template_xml, function(err, data){
+        var newContent = data.toString()
+                             .replace('{config}', indexer._config)
+                             .replace('{src_root}', indexer._source)
+                             .replace('{index_root}', indexer._target);
+        fs.writeFile(path.join(indexer._target, 'web.xml'), newContent, function(err){
             if (err) callback(err);
             else {
                 callback(null, indexer);
@@ -123,6 +124,8 @@ Indexer.create = function(data, callback) {
 Indexer.start_service = function(config, callback) {
     sock_index.connect(config.index_url);
     sock_deploy.bindSync(config.deploy_url);
+    console.info('Worker connected to index queue: '+config.index_url);
+    console.info('Worker bound to deploy queue: '+config.deploy_url);
     if (!config.opengrok_path || !config.opengrok_path.match('.jar$')) {
         callback('Require valid opengrok_path to be set!');
     } else if (!config.ctags_path) {
@@ -130,7 +133,6 @@ Indexer.start_service = function(config, callback) {
     } else {
         Indexer.OpenGrokPath = config.opengrok_path;
         Indexer.CtagsPath = config.ctags_path;
-        console.info('Worker connected to index queue: '+config.index_url);
         sock_index.on('message', function(name, src, dst){
             console.time('index-'+name);
             Indexer.create({
