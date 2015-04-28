@@ -19,9 +19,8 @@
     "neo4j": "~1.1",
     "zmq": "^2.11",
     "mkdirp": "^0.5.0",
-    "unzip": "^0.1.11",
-    "fstream": "^1.0.4",
-    "adm-zip": "^0.4.7"
+    "adm-zip": "^0.4.7",
+    "underscore": "^1.8.3"
   },
 
   "devDependencies": {
