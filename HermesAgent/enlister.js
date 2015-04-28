@@ -50,7 +50,7 @@ Enlister.prototype.prepare = function(callback) {
                 // TODO: check version number?
                 console.info("passed git version check!");
                 // 3. check the appropriate permission (file access, etc.)
-                enlister._path = path.normalize(path.join(Enlister.RootFolder, enlister._name));
+                enlister._path = path.normalize(path.join(Enlister.RootFolder, enlister._name, 'src'));
                 // 4. make directory
                 mkdirp(enlister._path, function (err) {
                     if (err) callback(err);
@@ -129,7 +129,7 @@ Enlister.start_service = function(config, callback) {
                         console.timeEnd('enlist-'+result._name);
                         console.info('enlist worker: %s[%s]: %s', result._name, result._type, result._url);
                         sock_index.send([result._name, result._path, 
-                            path.resolve(path.join(result._path,"..",result._name+"=grok"))]);
+                            path.resolve(path.join(result._path,"..","data"))]);
                     }
                 });
             }

@@ -12,7 +12,7 @@ var Deployer = module.exports = function Deployer(name, source_code_path, index_
     this._name = name;
     this._source = source_code_path;
     this._index = index_data_path;
-    this._web = path.resolve(path.join(this._index,'..',this._name+'=web'))+'\\';
+    this._web = path.resolve(path.join(this._index,'..','web'))+'\\';
 };
 
 // http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html#Deploy_a_Directory_or_WAR_by_URL
