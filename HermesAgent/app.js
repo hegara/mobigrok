@@ -11,9 +11,9 @@ var default_server_config =
     index_url: 'tcp://127.0.0.1:3001',
     deploy_url: 'tcp://127.0.0.1:3002',
     root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
-    opengrok_path: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar',
-    opengrok_war: 'C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\source.war',
-    ctags_path: 'C:\\tools\\ctags58\\ctags.exe',                        
+    opengrok_path: path.resolve(path.join(__dirname, '..', 'prebuilts', 'opengrok.jar')),
+    opengrok_war: path.resolve(path.join(__dirname, '..', 'prebuilts', 'source.war')),
+    ctags_path: path.resolve(path.join(__dirname, '..', 'prebuilts', 'ctags.exe')),                        
     tomcat_auth: 'jewelry:hegara',
     tomcat_hostname: 'localhost',
     tomcat_port: 8080,
@@ -47,8 +47,11 @@ fs.exists(config_file, function(exists){
                     +config_file+' and fall back to default settings');
                 start_services(default_server_config);
             } else {
-                var server_config = _.extend(default_server_config, JSON.parse(data));
+                var server_config = _.extend(default_server_config, JSON.parse(data).default);
                 // Resolve the path
+                server_config.root_folder = path.resolve(server_config.root_folder);
+                server_config.root_folder = path.resolve(server_config.opengrok_path);
+                server_config.root_folder = path.resolve(server_config.opengrok_war);
                 server_config.root_folder = path.resolve(server_config.root_folder);
                 
                 start_services(server_config);
