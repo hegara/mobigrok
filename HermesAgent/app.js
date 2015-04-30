@@ -17,6 +17,7 @@ var default_server_config =
     tomcat_auth: 'jewelry:hegara',
     tomcat_hostname: 'localhost',
     tomcat_port: 8080,
+    default_style: 'default'
 };
 
 var start_enlister = false;

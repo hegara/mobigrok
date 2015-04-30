@@ -17,6 +17,7 @@ var Indexer = module.exports = function Indexer(name, source, target) {
 
 Indexer.OpenGrokPath = null;
 Indexer.CtagsPath = null;
+Indexer.DefaultStyleDir = "default";
 Indexer.TemplateXml = path.join(__dirname,'web.xml');
 
 // use callback for error reporting or return the object
@@ -72,6 +73,7 @@ Indexer.prototype.index = function(callback) {
     console.info("Indexing "+indexer._source+" to "+indexer._target);   
     var opengrok_index = spawn("java", ["-jar", Indexer.OpenGrokPath,
                 "-c", Indexer.CtagsPath, "-d", indexer._target, "-s", indexer._source, 
+                "-L", Indexer.DefaultStyleDir, "-w", indexer._name,
                 "-W", indexer._config, "-v"]);
     opengrok_index.stdout.on('data', function(data) {
         console.info(data.toString());
@@ -133,6 +135,7 @@ Indexer.start_service = function(config, callback) {
     } else {
         Indexer.OpenGrokPath = config.opengrok_path;
         Indexer.CtagsPath = config.ctags_path;
+        Indexer.DefaultStyleDir = config.default_style;
         sock_index.on('message', function(name, src, dst){
             console.time('index-'+name);
             Indexer.create({
