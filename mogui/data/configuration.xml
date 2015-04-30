@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_45" class="java.beans.XMLDecoder">
+ <object class="org.opensolaris.opengrok.configuration.Configuration">
+  <void property="ctags">
+   <string>C:\tools\ctags58\ctags.exe</string>
+  </void>
+  <void property="dataRoot">
+   <string>F:\apache-tomcat-7.0.61\webapps\mogui\data</string>
+  </void>
+  <void property="sourceRoot">
+   <string>F:\apache-tomcat-7.0.61\webapps\mogui\src</string>
+  </void>
+  <void property="verbose">
+   <boolean>true</boolean>
+  </void>
+ </object>
+</java>
