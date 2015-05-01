@@ -4,21 +4,8 @@ var Indexer = require('./indexer')
   , Deployer = require('./deployer')
   , path = require('path')
   , fs = require('fs')
+  , os = require('os')
   , _ = require('underscore');
-var default_server_config = 
-{
-    enlist_url: 'tcp://127.0.0.1:3000',
-    index_url: 'tcp://127.0.0.1:3001',
-    deploy_url: 'tcp://127.0.0.1:3002',
-    root_folder: path.resolve(path.join(__dirname, '..', 'tmp')),
-    opengrok_path: path.resolve(path.join(__dirname, '..', 'prebuilts', 'opengrok.jar')),
-    opengrok_war: path.resolve(path.join(__dirname, '..', 'prebuilts', 'source.war')),
-    ctags_path: path.resolve(path.join(__dirname, '..', 'prebuilts', 'ctags.exe')),                        
-    tomcat_auth: 'jewelry:hegara',
-    tomcat_hostname: 'localhost',
-    tomcat_port: 8080,
-    default_style: 'default'
-};
 
 var start_enlister = false;
 var start_indexer = false;
@@ -44,24 +31,23 @@ fs.exists(config_file, function(exists){
     if (exists) {
         fs.readFile(config_file, function(err, data){
             if (err) {
-                console.warn('Fail to read from config file: '
+                console.error('Fail to read from config file: '
                     +config_file+' and fall back to default settings');
-                start_services(default_server_config);
             } else {
-                var server_config = _.extend(default_server_config, JSON.parse(data).default);
+                var config_obj = JSON.parse(data);
+                var server_config = _.extend(config_obj.default, config_obj[os.hostname()]);
                 // Resolve the path
                 server_config.root_folder = path.resolve(server_config.root_folder);
                 server_config.root_folder = path.resolve(server_config.opengrok_path);
                 server_config.root_folder = path.resolve(server_config.opengrok_war);
-                server_config.root_folder = path.resolve(server_config.root_folder);
+                server_config.ctags_path = path.resolve(server_config.ctags_path);
                 
                 start_services(server_config);
             }
         });
     } else {
-        console.warn('Fail to find config file: '
+        console.error('Fail to find config file: '
                 +config_file+' and fall back to default settings');
-        start_services(default_server_config);
     }
 });
 
