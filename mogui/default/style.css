@@ -1,31 +1,3 @@
-/* common stuff */
-body {
-	background-color: #ffffff;
-	color: black;
-	font-family: sans-serif;
-	margin: 1ex 1ex 0 1ex;
-}
-
-a {
-	text-decoration: none;
-}
-
-a:link {
-	color: #2030A2;
-}
-
-a:visited, a:active, a:hover {
-	color: #202062;
-}
-
-a:active, a:hover {
-	text-decoration: underline;
-}
-
-img, tt, form, pre {
-	border: 0;
-}
-
 del {
 	text-decoration: line-through;
 }
@@ -36,53 +8,15 @@ caption {
 	text-align: left;
 }
 
-thead {
-	background-color: #c5d5a9;
-}
-
-tbody tr:nth-child(EVEN) { /* alternate color for odd rows */
-	background-color: #e8e8f0;
-}
-
-input, button {
-	border: 1px solid #bbbbff;
-	border-radius: 0.75ex;
-	-moz-border-radius: 0.75ex;
-	background-color: #a3b8cb;
-}
-
-/* below seems to be a problem for input boxes, where the color will overwrite the text inside, let's leave it for buttons though
-for search and clear buttons will make it part of submit class ONLY */
-input.submit:hover, input.submit:active,
-button:hover, button:active {
-	color: #ffffff;        
-}
-
-label {
-}
-
 .pre { /* the diff content */
 	white-space: pre-wrap;
-	font-family: monospace;
 	margin: 0;
 }
 
-#page { }
 
 .error { /* error messages */
 	color: #a52a2a;
 }
-
-.active {
-	font-weight: bold;
-	/* color: #c20097; */
-}
-
-/* ############### start of header ############## */
-#whole_header { }
-
-/* *** banner/deco above navbar *** */
-#header { }
 
 #MastheadLogo {
 	width: 171px;
@@ -91,7 +25,7 @@ label {
 	background-image: url(./img/combined.png);
 	background-repeat: no-repeat;
 	background-position: 0 0;
-	margin: 0 0 0.5ex 0;
+	margin-top: -1ex;
 }
 
 #pagetitle { /* short verbal summary/description of the shown content */
@@ -141,10 +75,6 @@ label {
 
 #qtbl td:nth-child(2) {
 	width: 45ex;
-}
-
-#qtbl input.q {
-	width: 100%;
 }
 
 #ptbl {
@@ -208,15 +138,6 @@ label {
 
 #annotate.c, #history.c { /* indicate annotation/history available */
 	color: #666;
-}
-
-input.q { /* text input fields */
-	background-color: #ffffff;
-	border: 1px solid #bbbbff;
-}
-
-input.submit { /* start search button , clear button */
-	font-weight: bold;
 }
 
 #sortfield {
@@ -310,7 +231,6 @@ table#revisions {
 
 #revisions td:first-child {
 	/* rev number - git/mercurial revs numbers look bad with prop. fonts */
-	font-family: monospace;
 	text-align: right;
 }
 
@@ -322,7 +242,6 @@ table#revisions {
 
 #revisions td > div {
 	/* modified file list in comment column */
-	font-family: monospace;
 	text-align: left;
 	float: left;
 }
@@ -432,7 +351,6 @@ table#revisions {
 
 /* directory listing */
 table#dirlist { /* the "Name" column */
-	font-family: monospace;
 	border-style: none;
 	border-collapse: collapse;
 }
@@ -511,7 +429,7 @@ div[id^='src'] .n		{ /* numbers/label */	color: #a52a2a; }
 div[id^='src'] .s		{ /* strings */			color: green; }
 div[id^='src'] .c		{ /* comment */			color: #666; }
 div[id^='src'] .b		{ /* heading/title/bold */	color: #000; font-weight: bold; }
-div[id^='src'] .k		{ /* block display */ 	color: #000; font-family: monospace; }
+div[id^='src'] .k		{ /* block display */ 	color: #000; }
 div[id^='src'] a.d	{ /* symbol definition */	color: #909; font-weight: bold; }
 
 a.xm	{ /* macro */			color: #c66; font-weight: bold; }
@@ -567,7 +485,6 @@ a.xsr	{ /* subroutine */		color: #00f; font-weight: bold; }
 	background-color: rgba(255,255,204,0.75);
 	color: #000;
 	font-size: 12px;
-	font-family: monospace;
 	padding: 5px;
 }
 

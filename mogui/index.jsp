@@ -33,26 +33,23 @@ include file="projects.jspf"
 
 include file="httpheader.jspf"
 
-%><body>
-    <div id="page">
-        <div id="whole_header">
-            <div id="header"><%@
+%><body role="document">
+  <%@
 
 include file="pageheader.jspf"
 
-            %></div>
-            <div id="Masthead"></div>
-            <div id="sbar"><%@
+%>    
+  <div class="container" role="main" id="page">
+    <div id="sbar"><%@
 
 include file="menu.jspf"
 
-            %></div>
-        </div>
-        <div id="results"><%@
+  %></div>
+    <div id="results"><%@
 
 include file="index_body.html"
 
-        %></div>
+  %></div>
 <%
 }
 /* ---------------------- index.jsp end --------------------- */
