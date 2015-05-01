@@ -2,11 +2,11 @@
 // Source model logic.
 
 var neo4j = require('neo4j');
-var db = new neo4j.GraphDatabase(
-    process.env['NEO4J_URL'] ||
-    process.env['GRAPHENEDB_URL'] ||
-    'http://localhost:7474'
-);
+var config = require('../config');
+var db = new neo4j.GraphDatabase({
+    url:config.neo4j_url,
+    auth:config.neo4j_auth
+});
 
 // private constructor:
 
@@ -19,16 +19,16 @@ var Source = module.exports = function Source(_node) {
 // public instance properties:
 
 Object.defineProperty(Source.prototype, 'id', {
-    get: function () { return this._node.id; }
+    get: function () { return this._node._id; }
 });
 
 Source.defineProperty = function (prop) {
     Object.defineProperty(Source.prototype, prop, {
         get: function () {
-            return this._node.data[prop] || 'none';
+            return this._node.properties[prop] || 'none';
         },
         set: function (name) {
-            this._node.data[prop] = name;
+            this._node.properties[prop] = name;
         }
     });
 }
@@ -63,7 +63,7 @@ Source.prototype.del = function (callback) {
         SourceId: this.id
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -83,7 +83,7 @@ Source.prototype.getEnlisters = function (callback) {
         SourceId: this.id,
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
 
         var enlisters = [];
@@ -132,10 +132,6 @@ Source.getAll = function (callback) {
 
 // creates the Source and persists (saves) it to the db, incl. indexing it:
 Source.create = function (data, callback) {
-    // construct a new instance of our class with the data, so it can
-    // validate and extend it, etc., if we choose to do that in the future:
-    var node = db.createNode(data);
-    var source = new Source(node);
 
     // but we do the actual persisting with a Cypher query, so we can also
     // apply a label at the same time. (the save() method doesn't support
@@ -149,7 +145,7 @@ Source.create = function (data, callback) {
         data: data
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
         var source = new Source(results[0]['source']);
         callback(null, source);
