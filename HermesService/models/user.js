@@ -56,7 +56,7 @@ User.prototype.del = function (callback) {
         'WITH user',
         'MATCH (user) -[rel:follows]- (other)',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id
@@ -78,7 +78,7 @@ User.prototype.unfollow = function (other, callback) {
         'MATCH (user:User) -[rel:follows]-> (other:User)',
         'WHERE ID(user) = {userId} AND ID(other) = {otherId}',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
@@ -101,7 +101,7 @@ User.prototype.unlist = function (source, callback) {
         'MATCH (user:User) -[rel:enlist]-> (source:Source)',
         'WHERE ID(user) = {userId} AND ID(source) = {sourceId}',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
@@ -122,7 +122,7 @@ User.prototype.getFollowingAndOthers = function (callback) {
         'OPTIONAL MATCH (user) -[rel:follows]-> (other)',
         'WHERE ID(user) = {userId}',
         'RETURN other, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
@@ -159,7 +159,7 @@ User.prototype.getEnlistingAndOthers = function (callback) {
         'OPTIONAL MATCH (user) -[rel:enlist]-> (source)',
         'WHERE ID(user) = {userId}',
         'RETURN source, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
@@ -168,8 +168,8 @@ User.prototype.getEnlistingAndOthers = function (callback) {
     db.cypher({query:query, params:params}, function (err, results) {
         if (err) callback(err);
 
-        enlisting = [];
-        others = [];
+        var enlisting = [];
+        var others = [];
 
         for (var i = 0 ; i < results.length ; i++) {
             var other = new User(results[i]['source']);
@@ -194,7 +194,7 @@ User.get = function (userId, callback) {
             'WHERE ID(user)= {userId}',
             'RETURN user',
         ].join('\n'), 
-        params: {userId: userId}
+        params: {userId: parseInt(userId)}
     }, function (err, results) {
         if (err) return callback(err);
         if (!results[0]) return callback("no user found");
@@ -208,7 +208,6 @@ User.getAll = function (callback) {
         'RETURN user',
     ].join('\n');
 
-    console.log("getAll - db obj"+db.query);
     db.cypher(query, function (err, results) {
         if (err) return callback(err);
         var users = results.map(function (result) {

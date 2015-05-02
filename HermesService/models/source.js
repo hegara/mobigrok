@@ -100,7 +100,7 @@ Source.prototype.getEnlisters = function (callback) {
     });
 };
 
-Source.prototype.addEnlister = function (user) {
+Source.prototype.addEnlister = function (user, callback) {
     user._node.createRelationshipTo(this._node, 'enlist', {}, function (err, rel) {
         callback(err);
     });
@@ -108,10 +108,18 @@ Source.prototype.addEnlister = function (user) {
 
 // static methods:
 
-Source.get = function (id, callback) {
-    db.getNodeById(id, function (err, node) {
+Source.get = function (srcId, callback) {
+    db.cypher({
+        query: [
+            'MATCH (src:Source)',
+            'WHERE ID(src)= {srcId}',
+            'RETURN src',
+        ].join('\n'), 
+        params: {srcId: parseInt(srcId)}
+    }, function (err, results) {
         if (err) return callback(err);
-        callback(null, new Source(node));
+        if (!results[0]) return callback("no source found");
+        callback(null, new Source(results[0]['src']));
     });
 };
 
@@ -121,7 +129,7 @@ Source.getAll = function (callback) {
         'RETURN Source',
     ].join('\n');
 
-    db.query(query, null, function (err, results) {
+    db.cypher(query, function (err, results) {
         if (err) return callback(err);
         var Sources = results.map(function (result) {
             return new Source(result['Source']);
