@@ -2,11 +2,11 @@
 // User model logic.
 
 var neo4j = require('neo4j');
-var db = new neo4j.GraphDatabase(
-    process.env['NEO4J_URL'] ||
-    process.env['GRAPHENEDB_URL'] ||
-    'http://localhost:7474'
-);
+var config = require('../config');
+var db = new neo4j.GraphDatabase({
+    url:config.neo4j_url,
+    auth:config.neo4j_auth
+});
 
 // private constructor:
 
@@ -19,16 +19,16 @@ var User = module.exports = function User(_node) {
 // public instance properties:
 
 Object.defineProperty(User.prototype, 'id', {
-    get: function () { return this._node.id; }
+    get: function () { return this._node._id; }
 });
 
 User.defineProperty = function (prop) {
     Object.defineProperty(User.prototype, prop, {
         get: function () {
-            return this._node.data[prop] || 'none';
+            return this._node.properties[prop] || 'none';
         },
         set: function (name) {
-            this._node.data[prop] = name;
+            this._node.properties[prop] = name;
         }
     });
 }
@@ -56,13 +56,13 @@ User.prototype.del = function (callback) {
         'WITH user',
         'MATCH (user) -[rel:follows]- (other)',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -78,14 +78,14 @@ User.prototype.unfollow = function (other, callback) {
         'MATCH (user:User) -[rel:follows]-> (other:User)',
         'WHERE ID(user) = {userId} AND ID(other) = {otherId}',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
         otherId: other.id,
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -101,14 +101,14 @@ User.prototype.unlist = function (source, callback) {
         'MATCH (user:User) -[rel:enlist]-> (source:Source)',
         'WHERE ID(user) = {userId} AND ID(source) = {sourceId}',
         'DELETE rel',
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
         sourceId: source.id,
     };
 
-    db.query(query, params, function (err) {
+    db.cypher({query:query, params:params}, function (err) {
         callback(err);
     });
 };
@@ -122,14 +122,14 @@ User.prototype.getFollowingAndOthers = function (callback) {
         'OPTIONAL MATCH (user) -[rel:follows]-> (other)',
         'WHERE ID(user) = {userId}',
         'RETURN other, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
     };
 
     var user = this;
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
 
         var following = [];
@@ -159,17 +159,17 @@ User.prototype.getEnlistingAndOthers = function (callback) {
         'OPTIONAL MATCH (user) -[rel:enlist]-> (source)',
         'WHERE ID(user) = {userId}',
         'RETURN source, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         userId: this.id,
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) callback(err);
 
-        enlisting = [];
-        others = [];
+        var enlisting = [];
+        var others = [];
 
         for (var i = 0 ; i < results.length ; i++) {
             var other = new User(results[i]['source']);
@@ -187,10 +187,18 @@ User.prototype.getEnlistingAndOthers = function (callback) {
 
 // static methods:
 
-User.get = function (id, callback) {
-    db.getNodeById(id, function (err, node) {
+User.get = function (userId, callback) {
+    db.cypher({
+        query: [
+            'MATCH (user:User)',
+            'WHERE ID(user)= {userId}',
+            'RETURN user',
+        ].join('\n'), 
+        params: {userId: parseInt(userId)}
+    }, function (err, results) {
         if (err) return callback(err);
-        callback(null, new User(node));
+        if (!results[0]) return callback("no user found");
+        callback(null, new User(results[0]['user']));
     });
 };
 
@@ -200,7 +208,7 @@ User.getAll = function (callback) {
         'RETURN user',
     ].join('\n');
 
-    db.query(query, null, function (err, results) {
+    db.cypher(query, function (err, results) {
         if (err) return callback(err);
         var users = results.map(function (result) {
             return new User(result['user']);
@@ -211,10 +219,6 @@ User.getAll = function (callback) {
 
 // creates the user and persists (saves) it to the db, incl. indexing it:
 User.create = function (data, callback) {
-    // construct a new instance of our class with the data, so it can
-    // validate and extend it, etc., if we choose to do that in the future:
-    var node = db.createNode(data);
-    var user = new User(node);
 
     // but we do the actual persisting with a Cypher query, so we can also
     // apply a label at the same time. (the save() method doesn't support
@@ -228,7 +232,7 @@ User.create = function (data, callback) {
         data: data
     };
 
-    db.query(query, params, function (err, results) {
+    db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
         var user = new User(results[0]['user']);
         callback(null, user);
