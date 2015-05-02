@@ -46,8 +46,6 @@ include file="pageconfig.jspf"
     cfg = PageConfig.get(request);
     String styleDir = cfg.getCssDir();
     String ctxPath = request.getContextPath();
-    String dstyle = styleDir + '/' + "style.css";
-    String pstyle = styleDir + '/' + "print.css";
 %><!DOCTYPE html>
 <html lang="en">
   <head>
@@ -67,8 +65,7 @@ include file="pageconfig.jspf"
     <link href="<%=styleDir%>/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link rel="stylesheet" type="text/css" media="all" title="Default" href="<%= dstyle %>" />
-    <link rel="stylesheet" type="text/css" href="<%=styleDir%>/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" media="all" title="Default" href="<%= styleDir %>/main.css" />
 
     <link rel="search" href="<%=ctxPath%>/opensearch" type="application/opensearchdescription+xml" title="OpenGrok Search for current project(s)" />
 <%

@@ -18,15 +18,7 @@ caption {
 	color: #a52a2a;
 }
 
-#MastheadLogo {
-	width: 171px;
-	height: 40px;
-	float: left;
-	background-image: url(./img/combined.png);
-	background-repeat: no-repeat;
-	background-position: 0 0;
-	margin-top: -1ex;
-}
+
 
 #pagetitle { /* short verbal summary/description of the shown content */
 }
