@@ -21,40 +21,27 @@ Use is subject to license terms.
 
 Portions Copyright 2011 Jens Elkner.
 --%><%@ page session="false" errorPage="error.jsp" %><%@
-
 include file="projects.jspf"
-
 %><%
 /* ---------------------- index.jsp start --------------------- */
 {
-    cfg = PageConfig.get(request);
-    cfg.setTitle("Search");
+  cfg = PageConfig.get(request);
+  cfg.setTitle("Search");
 %><%@
-
-include file="httpheader.jspf"
-
-%><body role="document">
-  <%@
-
-include file="pageheader.jspf"
-
-%>    
+  include file="httpheader.jspf"
+%><body role="document"><%@
+  include file="pageheader.jspf"
+%>
+  <div class="jumbotron"><%@
+  include file="menu.jspf"
+%></div>
   <div class="container" role="main" id="page">
-    <div id="sbar"><%@
-
-include file="menu.jspf"
-
-  %></div>
     <div id="results"><%@
-
-include file="index_body.html"
-
-  %></div>
+  include file="index_body.html"
+%></div>
 <%
 }
 /* ---------------------- index.jsp end --------------------- */
 %><%@
-
-include file="foot.jspf"
-
+  include file="foot.jspf"
 %>
