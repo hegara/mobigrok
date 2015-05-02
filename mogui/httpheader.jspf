@@ -1,0 +1,80 @@
+<%--
+$Id$
+
+CDDL HEADER START
+
+The contents of this file are subject to the terms of the
+Common Development and Distribution License (the "License").
+You may not use this file except in compliance with the License.
+
+See LICENSE.txt included in this distribution for the specific
+language governing permissions and limitations under the License.
+
+When distributing Covered Code, include this CDDL HEADER in each
+file and include the License file at LICENSE.txt.
+If applicable, add the following below this CDDL HEADER, with the
+fields enclosed by brackets "[]" replaced with your own identifying
+information: Portions Copyright [yyyy] [name of copyright owner]
+
+CDDL HEADER END
+
+Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+Use is subject to license terms.
+
+Portions Copyright 2011 Jens Elkner.
+
+--%><%--
+
+All pages, which include this fragment should use the following code snippet
+to set the title of the document before the include directive for this fragment:
+<pre>
+
+    cfg = PageConfig.get(request);
+    cfg.setTitle("your title");
+
+</pre>
+--%><%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="
+org.opensolaris.opengrok.Info,
+org.opensolaris.opengrok.web.PageConfig"
+%><%@
+
+include file="pageconfig.jspf"
+
+%><%
+/* ---------------------- httpheader.jsp start --------------------- */
+{
+    cfg = PageConfig.get(request);
+    String styleDir = cfg.getCssDir();
+    String ctxPath = request.getContextPath();
+    String dstyle = styleDir + '/' + "style.css";
+    String pstyle = styleDir + '/' + "print.css";
+%><!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="generator" content="{OpenGrok <%=Info.getVersion()%> (<%=Info.getRevision()%>)" />
+    
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="<%=styleDir%>/img/icon.png" type="image/png" />
+    
+    <title><%=cfg.getTitle()%></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="<%=styleDir%>/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" media="all" title="Default" href="<%= dstyle %>" />
+    <link rel="stylesheet" type="text/css" href="<%=styleDir%>/print.css" media="print" />
+
+    <link rel="search" href="<%=ctxPath%>/opensearch" type="application/opensearchdescription+xml" title="OpenGrok Search for current project(s)" />
+<%
+out.write(cfg.getHeaderData());
+%>
+  </head><%
+}
+/* ---------------------- httpheader.jsp end --------------------- */
+%>

@@ -1,0 +1,19 @@
+{
+    "default":{
+        "enlist_url": "tcp://127.0.0.1:3000",
+        "index_url": "tcp://127.0.0.1:3001",
+        "deploy_url": "tcp://127.0.0.1:3002",
+        "root_folder": "../tmp",
+        "opengrok_path": "../prebuilts/opengrok.jar",
+        "opengrok_war": "../prebuilts/source.war",
+        "ctags_path": "../prebuilts/ctags.exe",
+        "tomcat_hostname": "localhost",
+        "tomcat_port": 8080
+    },
+    "GreenBlade":{
+        "opengrok_path": "C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\opengrok.jar",
+        "opengrok_war": "C:\\Users\\Chundong\\workspace\\OpenGrok\\dist\\source.war",
+        "ctags_path": "C:\\tools\\ctags58\\ctags.exe",
+        "tomcat_auth": "jewelry:hegara"
+    }
+}
