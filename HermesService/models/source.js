@@ -55,9 +55,12 @@ Source.prototype.del = function (callback) {
         'WHERE ID(source) = {SourceId}',
         'DELETE source',
         'WITH source',
-        'MATCH (source) -[rel:enlist]- (other)',
-        'DELETE rel',
-    ].join('\n')
+        'MATCH (source) -[rel1:enlist]- (other)',
+        'DELETE rel1',
+        'WITH source',
+        'MATCH (source) -[rel2:index]- (other)',
+        'DELETE rel2',
+    ].join('\n');
 
     var params = {
         SourceId: this.id
@@ -69,7 +72,7 @@ Source.prototype.del = function (callback) {
 };
 
 // calls callback w/ (err, following, others) where following is an array of
-// Sources this Source follows, and others is all other Sources minus him/herself.
+// Users this Source is enlisted, and others is all other Sources minus him/herself.
 Source.prototype.getEnlisters = function (callback) {
     // query all Sources and whether we follow each one or not:
     var query = [
@@ -77,7 +80,7 @@ Source.prototype.getEnlisters = function (callback) {
         'OPTIONAL MATCH (source) <-[rel:enlist]- (enlister)',
         'WHERE ID(source) = {SourceId}',
         'RETURN enlister, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n')
+    ].join('\n');
 
     var params = {
         SourceId: this.id,
@@ -90,9 +93,9 @@ Source.prototype.getEnlisters = function (callback) {
 
         for (var i = 0; i < results.length; i++) {
             var enlister = new Source(results[i]['enlister']);
-            var follows = results[i]['COUNT(rel)'];
+            var enlists = results[i]['COUNT(rel)'];
 
-            if (follows) {
+            if (enlists) {
                 enlisters.push(enlister);
             }
         }
