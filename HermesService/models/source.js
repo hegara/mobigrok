@@ -1,12 +1,9 @@
 // source.js
 // Source model logic.
 
-var neo4j = require('neo4j');
-var config = require('../config');
-var db = new neo4j.GraphDatabase({
-    url:config.neo4j_url,
-    auth:config.neo4j_auth
-});
+var User = require('user');
+var wingman = require('../lib/neo4j-db-wingman');
+var db = wingman.db;
 
 // private constructor:
 
@@ -18,31 +15,15 @@ var Source = module.exports = function Source(_node) {
 
 // public instance properties:
 
-Object.defineProperty(Source.prototype, 'id', {
-    get: function () { return this._node._id; }
-});
-
-Source.defineProperty = function (prop) {
-    Object.defineProperty(Source.prototype, prop, {
-        get: function () {
-            return this._node.properties[prop] || 'none';
-        },
-        set: function (name) {
-            this._node.properties[prop] = name;
-        }
-    });
-}
-
-Source.defineProperty('name');
-Source.defineProperty('type');
-Source.defineProperty('url');
+wingman.defineNodeIdProperty(Source);
+wingman.defineProperty(Source, 'name');
+wingman.defineProperty(Source, 'type');
+wingman.defineProperty(Source, 'url');
 
 // public instance methods:
 
 Source.prototype.save = function (callback) {
-    this._node.save(function (err) {
-        callback(err);
-    });
+    db.save(this, "Source", callback);
 };
 
 Source.prototype.del = function (callback) {
@@ -92,7 +73,7 @@ Source.prototype.getEnlisters = function (callback) {
         var enlisters = [];
 
         for (var i = 0; i < results.length; i++) {
-            var enlister = new Source(results[i]['enlister']);
+            var enlister = new User(results[i]['enlister']);
             var enlists = results[i]['COUNT(rel)'];
 
             if (enlists) {
@@ -104,10 +85,8 @@ Source.prototype.getEnlisters = function (callback) {
 };
 
 Source.prototype.addEnlister = function (user, callback) {
-    user._node.createRelationshipTo(this._node, 'enlist', {}, function (err, rel) {
-        callback(err);
-    });
-}
+    db.createRelationship(user, this, 'enlist', callback);
+};
 
 // static methods:
 

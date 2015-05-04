@@ -1,12 +1,9 @@
 // index.js
 // Index model logic.
 
-var neo4j = require('neo4j');
-var config = require('../config');
-var db = new neo4j.GraphDatabase({
-    url:config.neo4j_url,
-    auth:config.neo4j_auth
-});
+var Source = require('source');
+var wingman = require('../lib/neo4j-db-wingman');
+var db = wingman.db;
 
 // private constructor:
 
@@ -18,32 +15,16 @@ var Index = module.exports = function Index(_node) {
 
 // public instance properties:
 
-Object.defineProperty(Index.prototype, 'id', {
-    get: function () { return this._node._id; }
-});
-
-Index.defineProperty = function (prop) {
-    Object.defineProperty(Index.prototype, prop, {
-        get: function () {
-            return this._node.properties[prop] || 'none';
-        },
-        set: function (name) {
-            this._node.properties[prop] = name;
-        }
-    });
-}
-
-Index.defineProperty('progress');
-Index.defineProperty('version');
-Index.defineProperty('lastUpdated');
-Index.defineProperty('url');
+wingman.defineNodeIdProperty(Index);
+wingman.defineProperty(Index, 'progress');
+wingman.defineProperty(Index, 'version');
+wingman.defineProperty(Index, 'lastUpdated');
+wingman.defineProperty(Index, 'url');
 
 // public instance methods:
 
 Index.prototype.save = function (callback) {
-    this._node.save(function (err) {
-        callback(err);
-    });
+    db.save(this, "Index", callback);
 };
 
 Index.prototype.del = function (callback) {
@@ -52,11 +33,11 @@ Index.prototype.del = function (callback) {
     // (note that this'll still fail if there are any relationships attached
     // of any other types, which is good because we don't expect any.)
     var query = [
-        'MATCH (index:Index)',
-        'WHERE ID(index) = {IndexId}',
-        'DELETE index',
-        'WITH index',
-        'MATCH (index) -[rel:index]- (other)',
+        'MATCH (i:Index)',
+        'WHERE ID(i) = {IndexId}',
+        'DELETE i',
+        'WITH i',
+        'MATCH (i) -[rel:index]- (other)',
         'DELETE rel',
     ].join('\n');
 
@@ -74,9 +55,9 @@ Index.prototype.del = function (callback) {
 Index.prototype.getSources = function (callback) {
     // query all Indexs and whether we follow each one or not:
     var query = [
-        'MATCH (index:Index), (src:Source)',
-        'OPTIONAL MATCH (index) <-[rel:index]- (src)',
-        'WHERE ID(index) = {IndexId}',
+        'MATCH (i:Index), (src:Source)',
+        'OPTIONAL MATCH (i) <-[rel:index]- (src)',
+        'WHERE ID(i) = {IndexId}',
         'RETURN src, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
     ].join('\n');
 
@@ -90,7 +71,7 @@ Index.prototype.getSources = function (callback) {
         var sources = [];
 
         for (var i = 0; i < results.length; i++) {
-            var source = new Index(results[i]['enlister']);
+            var source = new Source(results[i]['src']);
             var index = results[i]['COUNT(rel)'];
 
             if (index) {
@@ -102,22 +83,7 @@ Index.prototype.getSources = function (callback) {
 };
 
 Index.prototype.addIndexer = function (source, callback) {
-    db.cypher({
-        query: [
-            'MATCH (s:Source),(i:Index)',
-            'WHERE ID(s)={sourceId} AND ID(i)={indexId}',
-			'CREATE (s)-[r:index]->(i)',
-            'RETURN r',
-        ].join('\n'), 
-        params: {
-			indexId: this.id,
-			sourceId: source.id,
-		}
-    }, function (err, results) {
-        if (err) return callback(err);
-        if (!results[0]) return callback("no index relationship created!");
-        callback(null);
-    });
+    db.createRelationship(source, this, 'index', callback);
 };
 
 // static methods:
@@ -125,28 +91,28 @@ Index.prototype.addIndexer = function (source, callback) {
 Index.get = function (indexId, callback) {
     db.cypher({
         query: [
-            'MATCH (index:Index)',
-            'WHERE ID(index)= {indexId}',
-            'RETURN index',
+            'MATCH (i:Index)',
+            'WHERE ID(i)= {indexId}',
+            'RETURN i',
         ].join('\n'), 
         params: {indexId: parseInt(indexId)}
     }, function (err, results) {
         if (err) return callback(err);
         if (!results[0]) return callback("no index found");
-        callback(null, new Index(results[0]['index']));
+        callback(null, new Index(results[0]['i']));
     });
 };
 
 Index.getAll = function (callback) {
     var query = [
-        'MATCH (Index:Index)',
-        'RETURN Index',
+        'MATCH (i:Index)',
+        'RETURN i',
     ].join('\n');
 
     db.cypher(query, function (err, results) {
         if (err) return callback(err);
         var Indexs = results.map(function (result) {
-            return new Index(result['Index']);
+            return new Index(result['i']);
         });
         callback(null, Indexs);
     });

@@ -1,12 +1,9 @@
 // user.js
 // User model logic.
 
-var neo4j = require('neo4j');
-var config = require('../config');
-var db = new neo4j.GraphDatabase({
-    url:config.neo4j_url,
-    auth:config.neo4j_auth
-});
+var Source = require('source');
+var wingman = require('../lib/neo4j-db-wingman');
+var db = wingman.db;
 
 // private constructor:
 
@@ -18,30 +15,14 @@ var User = module.exports = function User(_node) {
 
 // public instance properties:
 
-Object.defineProperty(User.prototype, 'id', {
-    get: function () { return this._node._id; }
-});
-
-User.defineProperty = function (prop) {
-    Object.defineProperty(User.prototype, prop, {
-        get: function () {
-            return this._node.properties[prop] || 'none';
-        },
-        set: function (name) {
-            this._node.properties[prop] = name;
-        }
-    });
-}
-
-User.defineProperty('name');
-User.defineProperty('email');
+wingman.defineNodeIdProperty(User);
+wingman.defineProperty(User, 'name');
+wingman.defineProperty(User, 'email');
 
 // public instance methods:
 
 User.prototype.save = function (callback) {
-    this._node.save(function (err) {
-        callback(err);
-    });
+    db.save(this, "User", callback);
 };
 
 User.prototype.del = function (callback) {
@@ -67,10 +48,8 @@ User.prototype.del = function (callback) {
     });
 };
 
-User.prototype.follow = function (other, callback) {
-    this._node.createRelationshipTo(other._node, 'follows', {}, function (err, rel) {
-        callback(err);
-    });
+User.prototype.follow = function (other, callback) {    
+    db.createRelationship(this, other, 'follows', callback);
 };
 
 User.prototype.unfollow = function (other, callback) {
@@ -91,9 +70,7 @@ User.prototype.unfollow = function (other, callback) {
 };
 
 User.prototype.enlist = function (source, callback) {
-    this._node.createRelationshipTo(source._node, 'enlist', {}, function (err, rel) {
-        callback(err);
-    });
+    db.createRelationship(this, source, 'enlist', callback);
 };
 
 User.prototype.unlist = function (source, callback) {
@@ -155,10 +132,10 @@ User.prototype.getFollowingAndOthers = function (callback) {
 User.prototype.getEnlistingAndOthers = function (callback) {
     // query all sources and whether we enlist each one or not:
     var query = [
-        'MATCH (user:User), (source:Source)',
-        'OPTIONAL MATCH (user) -[rel:enlist]-> (source)',
-        'WHERE ID(user) = {userId}',
-        'RETURN source, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
+        'MATCH (u:User), (s:Source)',
+        'OPTIONAL MATCH (u) -[rel:enlist]-> (s)',
+        'WHERE ID(u) = {userId}',
+        'RETURN s, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
     ].join('\n');
 
     var params = {
@@ -172,7 +149,7 @@ User.prototype.getEnlistingAndOthers = function (callback) {
         var others = [];
 
         for (var i = 0 ; i < results.length ; i++) {
-            var other = new User(results[i]['source']);
+            var other = new Source(results[i]['s']);
             var enlists = results[i]['COUNT(rel)'];
             if (enlists) {
                 enlisting.push(other);
