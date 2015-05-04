@@ -54,11 +54,11 @@ include file="pageconfig.jspf"
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow" />
     <meta name="generator" content="{OpenGrok <%=Info.getVersion()%> (<%=Info.getRevision()%>)" />
-    
+
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="<%=styleDir%>/img/icon.png" type="image/png" />
-    
+
     <title><%=cfg.getTitle()%></title>
 
     <!-- Bootstrap core CSS -->
