@@ -75,7 +75,7 @@ org.opensolaris.opengrok.web.Util"
 %>
 <div class="panel panel-default">
   <div class="panel-body">
-    <form class="form-horizontal" action="search" id="sbox">
+    <form class="form-horizontal" action="search">
       <div class="form-group form-group-sm">
         <label class="col-xs-3" for="s1" title="The text token(s) or other fields to be found (lucene query, this is not full text!)">Full&nbsp;Search</label>
         <div class="col-xs-9">

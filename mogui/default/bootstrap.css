@@ -2900,7 +2900,7 @@ select[multiple].form-group-lg .form-control {
   margin-bottom: 10px;
   color: #737373;
 }
-@media (min-width: 768px) {
+@media (min-width: 384px) {
   .form-inline .form-group {
     display: inline-block;
     margin-bottom: 0;
