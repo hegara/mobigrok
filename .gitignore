@@ -1,1 +1,8 @@
+.gitignore
+.settings/
 tmp
+docs/
+examples/
+host-manager/
+manager/
+ROOT/
