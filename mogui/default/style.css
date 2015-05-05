@@ -48,7 +48,7 @@ caption {
 #qtbl, #ptbl {
 	display: inline-block;
 	vertical-align: top;
-} 
+}
 
 #qtbl tr {
 	background: none; /* remove alternating colors */
@@ -75,7 +75,7 @@ caption {
 
 #ptbl button {
 	font-size: small;
-}	
+}
 
 #ptbl button:first-of-type {
 	margin-left: 1em;
@@ -184,7 +184,7 @@ caption {
 	line-height: 1.25em;
 }
 
-#more b { /* highlight matches */ 
+#more b { /* highlight matches */
 	background-color: #ffff99;
 }
 
@@ -495,7 +495,7 @@ a.xsr	{ /* subroutine */		color: #00f; font-weight: bold; }
 #results table {
 	border-collapse: collapse;
 	width: 100%;
-} 
+}
 
 #results .dir { /* directory row above matched files */
 	background-color: #c5d5a9;
@@ -532,7 +532,7 @@ a.xsr	{ /* subroutine */		color: #00f; font-weight: bold; }
 	color: #000;
 }
 
-#results i { /* match type description (method, interface etc.) */ 
+#results i { /* match type description (method, interface etc.) */
 	color: green;
 	font-weight: bold;
 	padding-left: 1ex;
@@ -564,23 +564,6 @@ a.xsr	{ /* subroutine */		color: #00f; font-weight: bold; }
 	text-align: center;
 }
 
-#fti { /* servedby.png */
-	display: inline-block;
-	width: 208px;
-	height: 45px;
-	vertical-align: middle;
-	background-image: url(./img/combined.png);
-	background-repeat: no-repeat;
-	background-position: -171px 0;
-}
-#rssi { /* rss.png */
-	display: inline-block;
-	width: 80px;
-	height: 15px;
-	vertical-align: middle;
-	background-image: url(./img/combined.png);
-	background-repeat: no-repeat;
-	background-position: -459px 0;
-}
+
 /* ############### end of footer ############## */
 

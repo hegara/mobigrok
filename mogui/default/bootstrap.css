@@ -2621,7 +2621,7 @@ input[type="search"] {
   }
 }
 .form-group {
-  margin-bottom: 5px;
+  margin-bottom: 15px;
 }
 .radio,
 .checkbox {
@@ -2900,7 +2900,7 @@ select[multiple].form-group-lg .form-control {
   margin-bottom: 10px;
   color: #737373;
 }
-@media (min-width: 768px) {
+@media (min-width: 384px) {
   .form-inline .form-group {
     display: inline-block;
     margin-bottom: 0;
@@ -4069,6 +4069,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar {
   position: relative;
   min-height: 50px;
+  margin-bottom: 20px;
   border: 1px solid transparent;
 }
 @media (min-width: 768px) {
@@ -4178,7 +4179,6 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   height: 50px;
   padding: 15px 15px;
   font-size: 18px;
-  font-weight: bold;
   line-height: 20px;
 }
 .navbar-brand:hover,
@@ -4856,7 +4856,7 @@ a.badge:focus {
   margin-left: 3px;
 }
 .jumbotron {
-  padding: 10px;
+  padding: 30px 15px;
   margin-bottom: 30px;
   color: inherit;
   background-color: #eee;

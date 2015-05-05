@@ -24,7 +24,6 @@ Portions Copyright 2011 Jens Elkner.
 include file="projects.jspf"
 %><%
 /* ---------------------- index.jsp start --------------------- */
-{
   cfg = PageConfig.get(request);
   cfg.setTitle("Search");
 %><%@
@@ -32,16 +31,10 @@ include file="projects.jspf"
 %><body role="document"><%@
   include file="pageheader.jspf"
 %>
-  <div class="jumbotron"><%@
-  include file="menu.jspf"
-%></div>
-  <div class="container" role="main" id="page">
-    <div id="results"><%@
+  <div class="container" role="main"><%@
   include file="index_body.html"
-%></div>
-<%
-}
-/* ---------------------- index.jsp end --------------------- */
+%><%@
+  include file="menu.jspf"
 %><%@
   include file="foot.jspf"
 %>
