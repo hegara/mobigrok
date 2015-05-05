@@ -1,9 +1,8 @@
 // source.js
 // Source model logic.
 
-var User = require('user');
-var wingman = require('../lib/neo4j-db-wingman');
-var db = wingman.db;
+var User = require('./user');
+var db = require('../lib/neo4j-db-wingman');
 
 // private constructor:
 
@@ -15,10 +14,10 @@ var Source = module.exports = function Source(_node) {
 
 // public instance properties:
 
-wingman.defineNodeIdProperty(Source);
-wingman.defineProperty(Source, 'name');
-wingman.defineProperty(Source, 'type');
-wingman.defineProperty(Source, 'url');
+db.defineIdProperty(Source);
+db.defineProperty(Source, 'name');
+db.defineProperty(Source, 'type');
+db.defineProperty(Source, 'url');
 
 // public instance methods:
 

@@ -2,12 +2,15 @@
 
 var config = require('../config');
 var neo4j = require('neo4j');
-var graphDatabase = new neo4j.GraphDatabase({
+var _ = require('underscore');
+var neo4jdb = new neo4j.GraphDatabase({
     url:config.neo4j_url,
     auth:config.neo4j_auth
 });
 
-graphDatabase.prototype.save = function (obj, name, cb) {
+_.extend(exports, neo4jdb);
+
+exports.save = function (obj, name, cb) {
     var query = [
         'MATCH (o:'+name+')',
         'WHERE ID(o) = {ObjId}',        
@@ -34,7 +37,7 @@ graphDatabase.prototype.save = function (obj, name, cb) {
 	});
 };
 
-graphDatabase.prototype.createRelationship = function (from, to, rel_name, callback) {
+exports.createRelationship = function (from, to, rel_name, callback) {
     this.cypher({
         query: [
             'MATCH (from),(to)',
@@ -53,15 +56,13 @@ graphDatabase.prototype.createRelationship = function (from, to, rel_name, callb
     });
 };
 
-exports.db = graphDatabase;
-
-exports.defineNodeIdProperty = function (klazz) {
+exports.defineIdProperty = function (klazz) {
 	Object.defineProperty(klazz.prototype, 'id', {
 	    get: function () { return this._node._id; }
 	});
 };
 
-exports.defineNodeProperty = function (klazz, prop) {
+exports.defineProperty = function (klazz, prop) {
     Object.defineProperty(klazz.prototype, prop, {
         get: function () {
             return this._node.properties[prop] || 'none';

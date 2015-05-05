@@ -1,9 +1,8 @@
 // index.js
 // Index model logic.
 
-var Source = require('source');
-var wingman = require('../lib/neo4j-db-wingman');
-var db = wingman.db;
+var Source = require('./source');
+var db = require('../lib/neo4j-db-wingman');
 
 // private constructor:
 
@@ -15,11 +14,11 @@ var Index = module.exports = function Index(_node) {
 
 // public instance properties:
 
-wingman.defineNodeIdProperty(Index);
-wingman.defineProperty(Index, 'progress');
-wingman.defineProperty(Index, 'version');
-wingman.defineProperty(Index, 'lastUpdated');
-wingman.defineProperty(Index, 'url');
+db.defineIdProperty(Index);
+db.defineProperty(Index, 'progress');
+db.defineProperty(Index, 'version');
+db.defineProperty(Index, 'lastUpdated');
+db.defineProperty(Index, 'url');
 
 // public instance methods:
 
