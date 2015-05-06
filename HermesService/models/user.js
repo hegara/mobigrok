@@ -120,14 +120,9 @@ User.get = function (id, callback) {
 User.getAll = function (callback) {
     db.getAll('User', function(err, results){
         if (err) return callback(err);
-        console.log('----------- User.getAll results');
-        console.dir(results);
-        console.log('=========== User.getAll results');
         var Users = results.map(function (result) {
             return new User(result);
         });
-        console.dir(Users);
-        console.log('+++++++++++ User.getAll results');
         callback(null, Users);
     });
 };

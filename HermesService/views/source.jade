@@ -15,6 +15,14 @@ block content
     else
         p #{source.name} hasn't been enlisted by anyone currently.
 
+    if groks.length
+        ul.groks
+            for grok in groks
+                li.groks
+                    p Grok: #{grok.progress} of #{grok.url}
+    else
+        p #{source.name} hasn't been grok'ed yet.
+
     p
         a(href='/sources') Back to all sources
 
@@ -29,6 +37,14 @@ block content
                 else
                     option #{repo_type}
         input(type='submit', value='Update')
+
+    form(action='/sources/#{source.id}/grok', method='POST')
+        p Grok this source:
+        input(type='text', name='progress', placeholder='10%', required)
+        input(type='text',  name='version', placeholder='1.0.0RC', required)
+        input(type='text', name='lastUpdated', placeholder='', required)
+        input(type='url',  name='url', placeholder='http://localhost:8080/#{source.name}/', required)
+        input(type='submit', value='Grok')
 
     form(action='/sources/#{source.id}', method='POST', onsubmit='return confirm("Are you sure?");')
         p And if you're feeling destructive…

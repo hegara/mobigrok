@@ -31,6 +31,10 @@ Source.prototype.addEnlister = function (user, callback) {
     db.createRelationship(user, this, 'enlist', callback);
 };
 
+Source.prototype.addGrok = function (grok, callback) {
+    db.createRelationship(this, grok, 'grok', callback);
+};
+
 // static methods:
 
 Source.get = function (id, callback) {

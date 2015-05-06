@@ -3,6 +3,7 @@
 
 var Source = require('../models/source');
 var User = require('../models/user');
+var Grok = require('../models/grok');
 
 /**
  * GET /sources
@@ -39,10 +40,15 @@ exports.show = function (req, res, next) {
         if (err) return next(err);
         // TODO also fetch and show followers? (not just follow*ing*)
         User.getEnlisters(source.id, function (err, enlisters){
-            res.render('source', {
-                source: source,
-                enlisters: enlisters,
-                alltypes: ['git','mercurial','svn']
+            if (err) return next(err);
+            Grok.getGroksForSource(source.id, function (err, groks){
+                if (err) return next(err);
+                res.render('source', {
+                    source: source,
+                    enlisters: enlisters,
+                    groks: groks,
+                    alltypes: ['git','mercurial','svn']
+                });
             });
         });
     });
@@ -73,6 +79,31 @@ exports.del = function (req, res, next) {
         source.del(function (err) {
             if (err) return next(err);
             res.redirect('/sources');
+        });
+    });
+};
+
+/**
+ * POST /sources/:id/grok
+ */
+exports.grok = function (req, res, next) {
+    Source.get(req.params.id, function (err, source) {
+        if (err) return next(err);   
+        console.log('source found:');
+        console.dir(source);     
+        Grok.create({
+            progress: req.body['progress'],
+            version: req.body['version'],
+            lastUpdated: req.body['lastUpdated'],
+            url: req.body['url']
+        }, function (err, grok) {
+            if (err) return next(err);
+            console.log('grok created!');
+            console.dir(grok);
+            source.addGrok(grok, function(err) {
+                if (err) return next(err);
+                res.redirect('/sources/' + source.id);
+            })
         });
     });
 };
