@@ -24,27 +24,7 @@ User.prototype.save = function (callback) {
 };
 
 User.prototype.del = function (callback) {
-    // use a Cypher query to delete both this user and his/her following
-    // relationships in one transaction and one network request:
-    // (note that this'll still fail if there are any relationships attached
-    // of any other types, which is good because we don't expect any.)
-    var query = [
-        'MATCH (user:User)',
-        'WHERE ID(user) = {userId}',
-        'DELETE user',
-        'WITH user',
-        'MATCH (user) -[rel:follows]- (other)',
-        'DELETE rel',
-    ].join('\n');
-
-    var params = {
-        userId: this.id
-    };
-
-    db.cypher({query:query, params:params}, function (err) {
-        console.log('user.del got: '+err);
-        callback(err);
-    });
+    db.del('User', this.id, ['follows', 'enlist'], callback);
 };
 
 User.prototype.follow = function (other, callback) {    
@@ -130,33 +110,25 @@ User.prototype.getFollowingAndOthers = function (callback) {
 
 // static methods:
 
-User.get = function (userId, callback) {
-    db.cypher({
-        query: [
-            'MATCH (user:User)',
-            'WHERE ID(user)= {userId}',
-            'RETURN user',
-        ].join('\n'), 
-        params: {userId: parseInt(userId)}
-    }, function (err, results) {
+User.get = function (id, callback) {
+    db.get('User', parseInt(id), function(err, result){
         if (err) return callback(err);
-        if (!results[0]) return callback("no user found");
-        callback(null, new User(results[0]['user']));
+        callback(null, new User(result));
     });
 };
 
 User.getAll = function (callback) {
-    var query = [
-        'MATCH (user:User)',
-        'RETURN user',
-    ].join('\n');
-
-    db.cypher(query, function (err, results) {
+    db.getAll('User', function(err, results){
         if (err) return callback(err);
-        var users = results.map(function (result) {
-            return new User(result['user']);
+        console.log('----------- User.getAll results');
+        console.dir(results);
+        console.log('=========== User.getAll results');
+        var Users = results.map(function (result) {
+            return new User(result);
         });
-        callback(null, users);
+        console.dir(Users);
+        console.log('+++++++++++ User.getAll results');
+        callback(null, Users);
     });
 };
 

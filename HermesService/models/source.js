@@ -24,29 +24,7 @@ Source.prototype.save = function (callback) {
 };
 
 Source.prototype.del = function (callback) {
-    // use a Cypher query to delete both this Source and the enlisting
-    // relationships in one transaction and one network request:
-    // (note that this'll still fail if there are any relationships attached
-    // of any other types, which is good because we don't expect any.)
-    var query = [
-        'MATCH (source:Source)',
-        'WHERE ID(source) = {SourceId}',
-        'DELETE source',
-        'WITH source',
-        'MATCH (source) -[rel1:enlist]- (other)',
-        'DELETE rel1',
-        'WITH source',
-        'MATCH (source) -[rel2:index]- (other)',
-        'DELETE rel2',
-    ].join('\n');
-
-    var params = {
-        SourceId: this.id
-    };
-
-    db.cypher({query:query, params:params}, function (err) {
-        callback(err);
-    });
+    db.del('Source', this.id, ['grok', 'enlist'], callback);
 };
 
 Source.prototype.addEnlister = function (user, callback) {
@@ -55,33 +33,20 @@ Source.prototype.addEnlister = function (user, callback) {
 
 // static methods:
 
-Source.get = function (srcId, callback) {
-    db.cypher({
-        query: [
-            'MATCH (src:Source)',
-            'WHERE ID(src)= {srcId}',
-            'RETURN src',
-        ].join('\n'), 
-        params: {srcId: parseInt(srcId)}
-    }, function (err, results) {
+Source.get = function (id, callback) {
+    db.get('Source', parseInt(id), function(err, result){
         if (err) return callback(err);
-        if (!results[0]) return callback("no source found");
-        callback(null, new Source(results[0]['src']));
+        callback(null, new Source(result));
     });
 };
 
 Source.getAll = function (callback) {
-    var query = [
-        'MATCH (Source:Source)',
-        'RETURN Source',
-    ].join('\n');
-
-    db.cypher(query, function (err, results) {
+    db.getAll('Source', function(err, results){
         if (err) return callback(err);
-        var Sources = results.map(function (result) {
-            return new Source(result['Source']);
+        var Users = results.map(function (result) {
+            return new Source(result);
         });
-        callback(null, Sources);
+        callback(null, Users);
     });
 };
 
