@@ -38,7 +38,7 @@ exports.show = function (req, res, next) {
         // TODO also fetch and show followers? (not just follow*ing*)
         user.getFollowingAndOthers(function (err, following, others) {
             if (err) return next(err);
-            user.getEnlistingAndOthers(function (err, enlisting, sources) {
+            Source.getEnlistingAndOthers(user.id, function (err, enlisting, sources) {
                 if (err) return next(err);
                 res.render('user', {
                     user: user,
@@ -71,6 +71,7 @@ exports.edit = function (req, res, next) {
  * DELETE /users/:id
  */
 exports.del = function (req, res, next) {
+    console.log('======router user.del');
     User.get(req.params.id, function (err, user) {
         if (err) return next(err);
         user.del(function (err) {

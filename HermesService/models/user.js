@@ -1,12 +1,7 @@
 // user.js
 // User model logic.
 
-var neo4j = require('neo4j');
-var config = require('../config');
-var db = new neo4j.GraphDatabase({
-    url:config.neo4j_url,
-    auth:config.neo4j_auth
-});
+var db = require('../lib/neo4j-db-wingman');
 
 // private constructor:
 
@@ -18,59 +13,22 @@ var User = module.exports = function User(_node) {
 
 // public instance properties:
 
-Object.defineProperty(User.prototype, 'id', {
-    get: function () { return this._node._id; }
-});
-
-User.defineProperty = function (prop) {
-    Object.defineProperty(User.prototype, prop, {
-        get: function () {
-            return this._node.properties[prop] || 'none';
-        },
-        set: function (name) {
-            this._node.properties[prop] = name;
-        }
-    });
-}
-
-User.defineProperty('name');
-User.defineProperty('email');
+db.defineIdProperty(User);
+db.defineProperty(User, 'name');
+db.defineProperty(User, 'email');
 
 // public instance methods:
 
 User.prototype.save = function (callback) {
-    this._node.save(function (err) {
-        callback(err);
-    });
+    db.save(this, "User", callback);
 };
 
 User.prototype.del = function (callback) {
-    // use a Cypher query to delete both this user and his/her following
-    // relationships in one transaction and one network request:
-    // (note that this'll still fail if there are any relationships attached
-    // of any other types, which is good because we don't expect any.)
-    var query = [
-        'MATCH (user:User)',
-        'WHERE ID(user) = {userId}',
-        'DELETE user',
-        'WITH user',
-        'MATCH (user) -[rel:follows]- (other)',
-        'DELETE rel',
-    ].join('\n');
-
-    var params = {
-        userId: this.id
-    };
-
-    db.cypher({query:query, params:params}, function (err) {
-        callback(err);
-    });
+    db.del('User', this.id, ['follows', 'enlist'], callback);
 };
 
-User.prototype.follow = function (other, callback) {
-    this._node.createRelationshipTo(other._node, 'follows', {}, function (err, rel) {
-        callback(err);
-    });
+User.prototype.follow = function (other, callback) {    
+    db.createRelationship(this, other, 'follows', callback);
 };
 
 User.prototype.unfollow = function (other, callback) {
@@ -91,9 +49,7 @@ User.prototype.unfollow = function (other, callback) {
 };
 
 User.prototype.enlist = function (source, callback) {
-    this._node.createRelationshipTo(source._node, 'enlist', {}, function (err, rel) {
-        callback(err);
-    });
+    db.createRelationship(this, source, 'enlist', callback);
 };
 
 User.prototype.unlist = function (source, callback) {
@@ -152,89 +108,61 @@ User.prototype.getFollowingAndOthers = function (callback) {
     });
 };
 
-User.prototype.getEnlistingAndOthers = function (callback) {
-    // query all sources and whether we enlist each one or not:
-    var query = [
-        'MATCH (user:User), (source:Source)',
-        'OPTIONAL MATCH (user) -[rel:enlist]-> (source)',
-        'WHERE ID(user) = {userId}',
-        'RETURN source, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n');
-
-    var params = {
-        userId: this.id,
-    };
-
-    db.cypher({query:query, params:params}, function (err, results) {
-        if (err) callback(err);
-
-        var enlisting = [];
-        var others = [];
-
-        for (var i = 0 ; i < results.length ; i++) {
-            var other = new User(results[i]['source']);
-            var enlists = results[i]['COUNT(rel)'];
-            if (enlists) {
-                enlisting.push(other);
-            } else {
-                others.push(other);
-            }
-        }
-
-        callback(null, enlisting, others);
-    });
-};
-
 // static methods:
 
-User.get = function (userId, callback) {
-    db.cypher({
-        query: [
-            'MATCH (user:User)',
-            'WHERE ID(user)= {userId}',
-            'RETURN user',
-        ].join('\n'), 
-        params: {userId: parseInt(userId)}
-    }, function (err, results) {
+User.get = function (id, callback) {
+    db.get('User', parseInt(id), function(err, result){
         if (err) return callback(err);
-        if (!results[0]) return callback("no user found");
-        callback(null, new User(results[0]['user']));
+        callback(null, new User(result));
     });
 };
 
 User.getAll = function (callback) {
-    var query = [
-        'MATCH (user:User)',
-        'RETURN user',
-    ].join('\n');
-
-    db.cypher(query, function (err, results) {
+    db.getAll('User', function(err, results){
         if (err) return callback(err);
-        var users = results.map(function (result) {
-            return new User(result['user']);
+        var Users = results.map(function (result) {
+            return new User(result);
         });
-        callback(null, users);
+        callback(null, Users);
     });
 };
 
-// creates the user and persists (saves) it to the db, incl. indexing it:
+// creates the User and persists (saves) it to the db, incl. indexing it:
 User.create = function (data, callback) {
+    db.create('User', data, function(err, result){
+        if (err) return callback(err);
+        callback(null, new User(result));
+    });
+};
 
-    // but we do the actual persisting with a Cypher query, so we can also
-    // apply a label at the same time. (the save() method doesn't support
-    // that, since it uses Neo4j's REST API, which doesn't support that.)
+// calls callback w/ (err, following, others) where following is an array of
+// Users this Source is enlisted, and others is all other Sources minus him/herself.
+User.getEnlisters = function (sourceId, callback) {
+    // query all Sources and whether we follow each one or not:
     var query = [
-        'CREATE (user:User {data})',
-        'RETURN user',
+        'MATCH (source:Source), (enlister:User)',
+        'OPTIONAL MATCH (source) <-[rel:enlist]- (enlister)',
+        'WHERE ID(source) = {sourceId}',
+        'RETURN enlister, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
     ].join('\n');
 
     var params = {
-        data: data
+        sourceId: sourceId,
     };
 
     db.cypher({query:query, params:params}, function (err, results) {
         if (err) return callback(err);
-        var user = new User(results[0]['user']);
-        callback(null, user);
+
+        var enlisters = [];
+
+        for (var i = 0; i < results.length; i++) {
+            var enlister = new User(results[i]['enlister']);
+            var enlists = results[i]['COUNT(rel)'];
+
+            if (enlists) {
+                enlisters.push(enlister);
+            }
+        }
+        callback(null, enlisters);
     });
 };

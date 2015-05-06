@@ -24,12 +24,24 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(favicon(path.join(__dirname, '/public/favicon.ico')));
 app.use(logger('dev'));
-app.use(methodOverride());
+// override with different headers; last one takes precedence
 app.use(session({ resave: true,
                   saveUninitialized: true,
                   secret: 'uwotm8' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride('X-HTTP-Method'))          // Microsoft
+app.use(methodOverride('X-HTTP-Method-Override')) // Google/GData
+app.use(methodOverride('X-Method-Override'))      // IBM
+app.use(methodOverride('_method'));               // Form w/ ?_method=DELETE
+app.use(methodOverride(function(req, res){
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
 app.use(multer());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -61,6 +73,8 @@ app.post('/sources', routes.sources.create);
 app.get('/sources/:id', routes.sources.show);
 app.delete('/sources/:id', routes.sources.del);
 app.post('/sources/:id', routes.sources.edit);
+
+app.post('/sources/:id/grok', routes.sources.grok);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening at: http://localhost:%d/', app.get('port'));
