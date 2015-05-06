@@ -2,6 +2,7 @@
 // Routes to CRUD sources.
 
 var Source = require('../models/source');
+var User = require('../models/user');
 
 /**
  * GET /sources
@@ -37,7 +38,7 @@ exports.show = function (req, res, next) {
     Source.get(req.params.id, function (err, source) {
         if (err) return next(err);
         // TODO also fetch and show followers? (not just follow*ing*)
-        source.getEnlisters(function (err, enlisters){
+        User.getEnlisters(source.id, function (err, enlisters){
             res.render('source', {
                 source: source,
                 enlisters: enlisters,

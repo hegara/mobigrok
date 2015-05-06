@@ -1,7 +1,6 @@
 // user.js
 // User model logic.
 
-var Source = require('./source');
 var db = require('../lib/neo4j-db-wingman');
 
 // private constructor:
@@ -128,39 +127,6 @@ User.prototype.getFollowingAndOthers = function (callback) {
     });
 };
 
-User.prototype.getEnlistingAndOthers = function (callback) {
-    // query all sources and whether we enlist each one or not:
-    var query = [
-        'MATCH (u:User), (s:Source)',
-        'OPTIONAL MATCH (u) -[rel:enlist]-> (s)',
-        'WHERE ID(u) = {userId}',
-        'RETURN s, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
-    ].join('\n');
-
-    var params = {
-        userId: this.id,
-    };
-
-    db.cypher({query:query, params:params}, function (err, results) {
-        if (err) callback(err);
-
-        var enlisting = [];
-        var others = [];
-
-        for (var i = 0 ; i < results.length ; i++) {
-            var other = new Source(results[i]['s']);
-            var enlists = results[i]['COUNT(rel)'];
-            if (enlists) {
-                enlisting.push(other);
-            } else {
-                others.push(other);
-            }
-        }
-
-        callback(null, enlisting, others);
-    });
-};
-
 // static methods:
 
 User.get = function (userId, callback) {
@@ -212,5 +178,37 @@ User.create = function (data, callback) {
         if (err) return callback(err);
         var user = new User(results[0]['user']);
         callback(null, user);
+    });
+};
+
+// calls callback w/ (err, following, others) where following is an array of
+// Users this Source is enlisted, and others is all other Sources minus him/herself.
+User.getEnlisters = function (sourceId, callback) {
+    // query all Sources and whether we follow each one or not:
+    var query = [
+        'MATCH (source:Source), (enlister:User)',
+        'OPTIONAL MATCH (source) <-[rel:enlist]- (enlister)',
+        'WHERE ID(source) = {sourceId}',
+        'RETURN enlister, COUNT(rel)', // COUNT(rel) is a hack for 1 or 0
+    ].join('\n');
+
+    var params = {
+        sourceId: sourceId,
+    };
+
+    db.cypher({query:query, params:params}, function (err, results) {
+        if (err) return callback(err);
+
+        var enlisters = [];
+
+        for (var i = 0; i < results.length; i++) {
+            var enlister = new User(results[i]['enlister']);
+            var enlists = results[i]['COUNT(rel)'];
+
+            if (enlists) {
+                enlisters.push(enlister);
+            }
+        }
+        callback(null, enlisters);
     });
 };
