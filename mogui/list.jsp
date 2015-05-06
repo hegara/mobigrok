@@ -62,9 +62,7 @@ org.opensolaris.opengrok.web.DirectoryListing"
     }
 }
 %><%@include
-
 file="mast.jsp"
-
 %><script type="text/javascript">/* <![CDATA[ */
 document.pageReady.push(function() { pageReadyList();});
 /* ]]> */</script>
@@ -215,12 +213,10 @@ document.pageReady.push(function() { pageReadyList();});
             xrefFile = cfg.findDataFile();
         }
         if (xrefFile != null) {
-%>
-<div id="src">
-    <pre><%
-            Util.dump(out, xrefFile, xrefFile.getName().endsWith(".gz"));
-    %></pre>
-</div><%
+%>    <pre><% // lyp: Handled this case
+Util.dump(out, xrefFile, xrefFile.getName().endsWith(".gz"));
+%>    </pre>
+<%
         } else {
             // annotate
             BufferedInputStream bin =
@@ -271,8 +267,8 @@ Click <a href="<%= rawPath %>">download <%= basename %></a><%
     }
 }
 /* ---------------------- list.jsp end --------------------- */
-%><%@
-
+%>  </div>
+  </div>
+</form><%@
 include file="foot.jspf"
-
 %>
