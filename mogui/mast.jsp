@@ -87,7 +87,7 @@ include file="pageheader.jspf"
       <div class="panel-heading">
         <strong><a href="<%= context + Prefix.XREF_P %>/">Root</a></strong><%= Util
           .breadcrumbPath(context + Prefix.XREF_P, path,'/',"",true,cfg.isDir())
-      %></div>
+%>    </div>
       <div class="panel-body">
         <div class="input-group input-group-sm">
           <span class="input-group-addon"><%
@@ -159,7 +159,6 @@ if (proj != null) {
 %>  <input type="hidden" name="project" value="<%=proj.getDescription()%>" /><%
 }
 %>
-</form>
 <%
 }
 /* ---------------------- mast.jsp end --------------------- */
