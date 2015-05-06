@@ -71,6 +71,7 @@ exports.edit = function (req, res, next) {
  * DELETE /users/:id
  */
 exports.del = function (req, res, next) {
+    console.log('======router user.del');
     User.get(req.params.id, function (err, user) {
         if (err) return next(err);
         user.del(function (err) {

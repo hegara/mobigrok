@@ -87,23 +87,9 @@ Source.getAll = function (callback) {
 
 // creates the Source and persists (saves) it to the db, incl. indexing it:
 Source.create = function (data, callback) {
-
-    // but we do the actual persisting with a Cypher query, so we can also
-    // apply a label at the same time. (the save() method doesn't support
-    // that, since it uses Neo4j's REST API, which doesn't support that.)
-    var query = [
-        'CREATE (source:Source {data})',
-        'RETURN source',
-    ].join('\n');
-
-    var params = {
-        data: data
-    };
-
-    db.cypher({query:query, params:params}, function (err, results) {
+    db.create('Source', data, function(err, result){
         if (err) return callback(err);
-        var source = new Source(results[0]['source']);
-        callback(null, source);
+        callback(null, new Source(result));
     });
 };
 

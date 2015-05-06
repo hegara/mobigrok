@@ -42,6 +42,7 @@ User.prototype.del = function (callback) {
     };
 
     db.cypher({query:query, params:params}, function (err) {
+        console.log('user.del got: '+err);
         callback(err);
     });
 };
@@ -159,25 +160,11 @@ User.getAll = function (callback) {
     });
 };
 
-// creates the user and persists (saves) it to the db, incl. indexing it:
+// creates the User and persists (saves) it to the db, incl. indexing it:
 User.create = function (data, callback) {
-
-    // but we do the actual persisting with a Cypher query, so we can also
-    // apply a label at the same time. (the save() method doesn't support
-    // that, since it uses Neo4j's REST API, which doesn't support that.)
-    var query = [
-        'CREATE (user:User {data})',
-        'RETURN user',
-    ].join('\n');
-
-    var params = {
-        data: data
-    };
-
-    db.cypher({query:query, params:params}, function (err, results) {
+    db.create('User', data, function(err, result){
         if (err) return callback(err);
-        var user = new User(results[0]['user']);
-        callback(null, user);
+        callback(null, new User(result));
     });
 };
 

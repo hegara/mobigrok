@@ -38,6 +38,21 @@ exports.save = function (obj, name, cb) {
     });
 };
 
+exports.create = function (klazz_name, data, callback) {
+    this.cypher({
+        query: [
+            'CREATE (o:'+klazz_name+' {data})',
+            'RETURN o',
+        ].join('\n'), 
+        params: {
+            data: data
+        }
+    }, function (err, results) {
+        if (err) return callback(err);
+        callback(null, results[0]['o']);
+    });
+};
+
 exports.createRelationship = function (from, to, rel_name, callback) {
     this.cypher({
         query: [

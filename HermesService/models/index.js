@@ -119,22 +119,8 @@ Index.getAll = function (callback) {
 
 // creates the Index and persists (saves) it to the db, incl. indexing it:
 Index.create = function (data, callback) {
-
-    // but we do the actual persisting with a Cypher query, so we can also
-    // apply a label at the same time. (the save() method doesn't support
-    // that, since it uses Neo4j's REST API, which doesn't support that.)
-    var query = [
-        'CREATE (index:Index {data})',
-        'RETURN index',
-    ].join('\n');
-
-    var params = {
-        data: data
-    };
-
-    db.cypher({query:query, params:params}, function (err, results) {
+    db.create('Index', data, function(err, result){
         if (err) return callback(err);
-        var index = new Index(results[0]['index']);
-        callback(null, index);
+        callback(null, new Index(result));
     });
 };
