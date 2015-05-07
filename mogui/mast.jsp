@@ -110,7 +110,7 @@ String[] vals = cfg.getSearchOnlyIn();
         <div class="btn-group btn-group-sm" role="toolbar"><%
 if (!cfg.isDir()) {
   if (cfg.getPrefix() == Prefix.XREF_P) {
-%>        <a type="button" class="btn btn-default" onclick="javascript:lntoggle();return false;" aria-label="Show or hide line numbers (might be slower if file has more than 10 000 lines)." data-toggle="button" aria-pressed="false"><!--
+%>        <a type="button" class="btn btn-default active" onclick="javascript:lntoggle();return false;" aria-label="Show or hide line numbers (might be slower if file has more than 10 000 lines)." data-toggle="button" aria-pressed="true"><!--
             <span class="glyphicon glyphicon-list" aria-hidden="true"></span>-->
             Line Num
           </a>
