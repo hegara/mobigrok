@@ -107,52 +107,26 @@ String[] vals = cfg.getSearchOnlyIn();
     </div>
     <div class="panel panel-default" role="main">
       <div class="panel-body">
-        <div class="btn-group" role="group"><%
-if (!cfg.hasHistory()) {
-%>      <a type="button" class="btn btn-default" aria-label="History" disabled="disabled">
-          <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-        </a><%
-} else {
-%>      <a type="button" class="btn btn-default" aria-label="History"
-           href="<%= context + Prefix.HIST_L + uriEncodedPath %>">
-          <span class="glyphicon glyphicon-align-left" aria-hidden="true"></span>
-        </a><%
-}
-if (!cfg.hasAnnotations() /* || cfg.getPrefix() == Prefix.HIST_S */ ) {
-%>      <a type="button" class="btn btn-default" aria-label="Annotate" disabled="disabled">
-          <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>
-        </a><%
-} else if (cfg.annotate()) {
-%>    <li role="presentation"><span id="toggle-annotate-by-javascript" style="display: none"><a
-              href="#" onclick="javascript:toggle_annotations(); return false;"
-              title="Show or hide line annotation(commit revisions,authors)."
-              ><span class="annotate"></span>Annotate</a></span><span
-              id="toggle-annotate"><a href="<%= context + Prefix.XREF_P + uriEncodedPath + (rev.length() == 0 ? "" : "?") + rev %>"><span class="annotate"></span>Annotate</a></span></li><%
-} else {
-%>      <a type="button" class="btn btn-default" aria-label="Annotate"
-           onclick="javascript:get_annotations(); return false;">
-          <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span>
-        </a><%
-}
+        <div class="btn-group btn-group-sm" role="toolbar"><%
 if (!cfg.isDir()) {
   if (cfg.getPrefix() == Prefix.XREF_P) {
-%>      <a type="button" class="btn btn-default" onclick="javascript:lntoggle();return false;"
-           aria-label="Show or hide line numbers (might be slower if file has more than 10 000 lines).">
-          <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-        </a>
-        <a type="button" class="btn btn-default" onclick="javascript:lsttoggle();return false;"
-           aria-label="Show or hide symbol list.">
-          <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
-        </a><%
+%>        <a type="button" class="btn btn-default" onclick="javascript:lntoggle();return false;" aria-label="Show or hide line numbers (might be slower if file has more than 10 000 lines)." data-toggle="button" aria-pressed="false"><!--
+            <span class="glyphicon glyphicon-list" aria-hidden="true"></span>-->
+            Line Num
+          </a>
+          <a type="button" class="btn btn-default" onclick="javascript:lsttoggle();return false;" aria-label="Show or hide symbol list."><!--
+            <span class="glyphicon glyphicon-jpy" aria-hidden="true"></span>-->
+            Symbol
+          </a><%
   }
-%>      <a type="button" class="btn btn-default" aria-label="View raw source file"
-           href="<%= context + Prefix.RAW_P + uriEncodedPath + (rev.length() == 0 ? "" : "?") + rev %>">
-          <span class="glyphicon glyphicon-file" aria-hidden="true"></span>
-        </a>
-        <a type="button" class="btn btn-default" aria-label="Download"
-           href="<%= context + Prefix.DOWNLOAD_P + uriEncodedPath + (rev.length() == 0 ? "" : "?") + rev %>">
-          <span class="glyphicon glyphicon-cloud-download" aria-hidden="true"></span>
-        </a><%
+%>        <a type="button" class="btn btn-default" aria-label="View raw source file" href="<%= context + Prefix.RAW_P + uriEncodedPath + (rev.length() == 0 ? "" : "?") + rev %>"><!--
+            <span class="glyphicon glyphicon-file" aria-hidden="true"></span>-->
+            Raw
+          </a>
+          <a type="button" class="btn btn-default" aria-label="Download" href="<%= context + Prefix.DOWNLOAD_P + uriEncodedPath + (rev.length() == 0 ? "" : "?") + rev %>"><!--
+            <span class="glyphicon glyphicon-save" aria-hidden="true"></span>-->
+            Download
+          </a><%
 }
 %>    </div><%
 if (proj != null) {
