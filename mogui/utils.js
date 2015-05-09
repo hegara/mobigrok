@@ -439,3 +439,8 @@ function checkEnter(event) {
         $("#sbox").submit();
     }
 }
+
+/* -------------- Custom ----------------- */
+function updateTableStyle() {
+  $('table').addClass('table table-condensed table-striped');
+}

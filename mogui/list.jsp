@@ -270,6 +270,7 @@ Click <a href="<%= rawPath %>">download <%= basename %></a><%
 </form>
 <script type="text/javascript">/* <![CDATA[ */
 document.pageReady.push(function() { pageReadyList();});
+document.pageReady.push(function() { updateTableStyle();});
 /* ]]> */</script><%@
 include file="foot.jspf"
 %>

@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,400italic);
-/* bootstrap overwrite */
+/* ----------- bootstrap overwrite ----------- */
 body {
   background-color: #eee;
 }
@@ -10,6 +10,24 @@ pre {
   margin: 10px 0 0 0;
   font-family: "Source Sans Pro", monospace;
 }
+
+.table {
+ font-family: "Source Sans Pro", monospace;
+}
+
+.table-condensed > thead > tr > th,
+.table-condensed > tbody > tr > th,
+.table-condensed > tfoot > tr > th,
+.table-condensed > thead > tr > td,
+.table-condensed > tbody > tr > td,
+.table-condensed > tfoot > tr > td {
+  padding: 1px;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #eee;
+}
+
 .navbar {
   min-height: 35px;
   margin-bottom: 10px;
@@ -36,7 +54,8 @@ pre {
 .panel {
   margin-bottom: 10px;
 }
-/* custom entries */
+
+/* ----------- custom entries ---------- */
 .logo {
   font-weight: bold;
   color: #cf0;
@@ -82,4 +101,8 @@ pre .n {
 pre .c {
   color: #999;
   font-style: italic;
+}
+table p.p,
+table p.r {
+  padding-left: 5px;
 }
