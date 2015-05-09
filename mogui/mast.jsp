@@ -79,7 +79,20 @@ include file="httpheader.jspf"
     %>';document.annotate = <%= cfg.annotate() %>;
     document.domReady.push(function() {domReadyMast();});
     document.pageReady.push(function() { pageReadyMast();});
+    document.pageReady.push(function() { genSymbolList();});
 /* ]]> */</script>
+<div class="modal fade symbol-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Symbol List</h4>
+      </div>
+      <div class="modal-body" id="symbol-list">
+      </div>
+    </div>
+  </div>
+</div>
 <form action="<%= context + Prefix.SEARCH_P %>"><%@
 include file="pageheader.jspf"
 %><div class="container">

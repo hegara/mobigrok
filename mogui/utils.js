@@ -172,13 +172,12 @@ function get_sym_list_contents() {
     // contents += "&nbsp;&nbsp;";
     // contents += "<b><a href=\"#\" onclick=\"javascript:add_highlight();return
     // false;\" title=\"Add highlight\">Highlight</a></b><br/>";
-    var contents =
-        "<a href=\"#\" onclick=\"javascript:lsttoggle();\">[Close]</a><br/>"
     if (typeof get_sym_list != 'function') {
-        return contents;
+        return false;
     }
 
     var symbol_classes = get_sym_list();
+    var contents = '';
     for ( var i = 0; i < symbol_classes.length; i++) {
         if (i > 0) {
             contents += "<br/>";
@@ -191,8 +190,7 @@ function get_sym_list_contents() {
         for (var j = 0; j < symbols.length; j++) {
             var symbol = symbols[j][0];
             var line = symbols[j][1];
-            contents += "<a href=\"#" + line + "\" class=\"" + class_name + "\">"
-                + escape_html(symbol) + "</a><br/>";
+            contents += "<a href=\"#" + line + "\" class=\"" + class_name + "\" onclick=\"lsttoggle();\">" + escape_html(symbol) + " </a><br/>";
         }
     }
 
@@ -229,34 +227,19 @@ function get_sym_div_width() {
 
 /**
  * Toggle the display of the 'Navigation' window used to highlight definitions.
+ * lyp: overwritten
  */
+function genSymbolList() {
+  var d = $("#symbol-list");
+  var list = get_sym_list_contents();
+  if (!list) {
+    d.html('No symbols');
+  } else {
+    d.html(list);
+  }
+}
 function lsttoggle() {
-    if (document.sym_div == null) {
-        document.sym_div = document.createElement("div");
-        document.sym_div.id = "sym_div";
-
-        document.sym_div.className = "sym_list_style";
-        document.sym_div.style.margin = "0px auto";
-        document.sym_div.style.width = get_sym_div_width() + "px";
-        document.sym_div.style.height = get_sym_div_height() + "px";
-        document.sym_div.style.top = get_sym_div_top() + "px";
-        document.sym_div.style.left = get_sym_div_left() + "px";
-
-        document.sym_div.innerHTML = get_sym_list_contents();
-
-        document.body.appendChild(document.sym_div);
-        document.sym_div_shown = 1;
-    } else if (document.sym_div_shown == 1) {
-        document.sym_div.className = "sym_list_style_hide";
-        document.sym_div_shown = 0;
-    } else {
-        document.sym_div.style.height = get_sym_div_height() + "px";
-        document.sym_div.style.width = get_sym_div_width() + "px";
-        document.sym_div.style.top = get_sym_div_top() + "px";
-        document.sym_div.style.left = get_sym_div_left() + "px";
-        document.sym_div.className = "sym_list_style";
-        document.sym_div_shown = 1;
-    }
+  $('.symbol-modal').modal('toggle');
 }
 
 /**
