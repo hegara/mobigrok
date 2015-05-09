@@ -63,9 +63,7 @@ org.opensolaris.opengrok.web.DirectoryListing"
 }
 %><%@include
 file="mast.jsp"
-%><script type="text/javascript">/* <![CDATA[ */
-document.pageReady.push(function() { pageReadyList();});
-/* ]]> */</script>
+%>
 <%
 /* ---------------------- list.jsp start --------------------- */
 {
@@ -269,6 +267,9 @@ Click <a href="<%= rawPath %>">download <%= basename %></a><%
 /* ---------------------- list.jsp end --------------------- */
 %>  </div>
   </div>
-</form><%@
+</form>
+<script type="text/javascript">/* <![CDATA[ */
+document.pageReady.push(function() { pageReadyList();});
+/* ]]> */</script><%@
 include file="foot.jspf"
 %>

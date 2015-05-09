@@ -71,6 +71,8 @@ include file="pageconfig.jspf"
 <%
 out.write(cfg.getHeaderData());
 %>
+    <script type="text/javascript" src="<%=ctxPath%>/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="<%=ctxPath%>/utils.js"></script>
   </head><%
 }
 /* ---------------------- httpheader.jsp end --------------------- */
