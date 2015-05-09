@@ -107,12 +107,10 @@ file="mast.jsp"
                 if (catfiles[i] == null) {
                     continue;
                 }
-%><h3><%= readMes.get(i) %></h3>
-<div id="src<%=i%>">
-    <pre><%
-                Util.dump(out, catfiles[i], catfiles[i].getName().endsWith(".gz"));
-    %></pre>
-</div><%
+%>  <h3><%= readMes.get(i) %></h3>
+    <pre><% // lyp: Handled this case
+Util.dump(out, catfiles[i], catfiles[i].getName().endsWith(".gz"));
+%> </pre><%
             }
         }
     } else if (rev.length() != 0) {
