@@ -246,8 +246,10 @@ Util.dump(out, xrefFile, xrefFile.getName().endsWith(".gz"));
     %></pre>
 </div><%
                 } else {
-%>
-Click <a href="<%= rawPath %>">download <%= basename %></a><%
+    
+%>    <p class="src">
+        Click <a href="<%= rawPath %>">download <%= basename %></a>
+      </p><% // lyp: Handled this case
                 }
             } finally {
                 if (r != null) {
