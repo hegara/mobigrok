@@ -55,6 +55,15 @@ pre {
   margin-bottom: 10px;
 }
 
+.modal-header,
+.modal-body {
+  padding: 10px;
+}
+
+.img-thumbnail {
+  padding: 0;
+}
+
 /* ----------- custom entries ---------- */
 .logo {
   font-weight: bold;
@@ -102,11 +111,15 @@ pre .c {
   color: #999;
   font-style: italic;
 }
-p.src {
+p.pre {
   padding-top: 10px;
   font-family: "Source Sans Pro", monospace;
 }
 table p.p,
 table p.r {
   padding-left: 5px;
+}
+
+#symbol-list {
+  font-family: "Source Sans Pro", monospace;
 }

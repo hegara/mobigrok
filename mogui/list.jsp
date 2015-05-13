@@ -191,10 +191,9 @@ Util.dump(out, catfiles[i], catfiles[i].getName().endsWith(".gz"));
                 }
             }
         } else if (g == Genre.IMAGE) {
-%>
-<div id="src">
-    <img src="<%= rawPath %>?<%= rev %>"/>
-</div><%
+%>    <p class="pre">
+        <img src="<%= rawPath %>?<%= rev %>"/>
+      </p><% // lyp: Handled this case
         } else {
 %>
 <div id="src">
@@ -225,10 +224,9 @@ Util.dump(out, xrefFile, xrefFile.getName().endsWith(".gz"));
                     g = AnalyzerGuru.getGenre(a);
                 }
                 if (g == Genre.IMAGE) {
-%>
-<div id="src">
-    <img src="<%= rawPath %>"/>
-</div><%
+%>      <p class="pre">
+          <img class="img-thumbnail" src="<%= rawPath %>"/>
+        </p><% // lyp: Handled this case
                 } else if ( g == Genre.HTML) {
                     r = new InputStreamReader(bin);
                     Util.dump(out, r);
@@ -247,7 +245,7 @@ Util.dump(out, xrefFile, xrefFile.getName().endsWith(".gz"));
 </div><%
                 } else {
     
-%>    <p class="src">
+%>    <p class="pre">
         Click <a href="<%= rawPath %>">download <%= basename %></a>
       </p><% // lyp: Handled this case
                 }
