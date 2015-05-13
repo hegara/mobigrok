@@ -29,9 +29,11 @@ org.opensolaris.opengrok.web.PageConfig"
     String ctxPath = request.getContextPath();
 %>
     <div class="container">
-      <div class="row text-center">
-        <p>Indexes created <code><%= cfg.getEnv().getDateForLastIndexRun() %></code></p>
-        <p class="text-muted">Served by <a href="#">MobiGrok</a></p>
+      <div class="row text-center text-muted">
+        <small>
+          Indexes created <code><%= cfg.getEnv().getDateForLastIndexRun() %></code><br/>
+          Served by <a href="#">MobiGrok</a>
+        </small>
       </div>
     </div>
   </div>
